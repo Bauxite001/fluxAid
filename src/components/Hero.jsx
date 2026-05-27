@@ -1,6 +1,6 @@
 // Hero.jsx
 
-import Button from "./Button";
+import { Link } from "react-router-dom";
 
 const STATS = [
   { value: "Many", label: "Lives Impacted", color: "text-[#2F8AC9]" },
@@ -99,15 +99,27 @@ const Hero = () => {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:flex-wrap">
-            <button className="bg-[#2F8AC9] text-white font-condensed font-bold uppercase text-[11px] tracking-[2.5px] px-8 py-4 rounded-[4px] border-0 text-center">
+            <Link
+              to={"/programs"}
+              className="bg-[#2F8AC9] text-white font-condensed font-bold uppercase text-[11px] tracking-[2.5px] px-8 py-4 rounded-[4px] border-0 text-center"
+              style={{ padding: "14px 32px", color: "white" }}
+            >
               Our Programs
-            </button>
-            <button className="bg-[#6C609E] text-white font-condensed font-bold uppercase text-[11px] tracking-[2.5px] px-7 py-4 rounded-[4px] border-0 text-center">
+            </Link>
+            <Link
+              to={"/about"}
+              className="bg-[#6C609E] text-white font-condensed font-bold uppercase text-[11px] tracking-[2.5px] px-7 py-4 rounded-[4px] border-0 text-center"
+              style={{ padding: "14px 30px", color: "white" }}
+            >
               Our Story
-            </button>
-            <button className="bg-transparent text-[rgba(200,214,232,0.7)] font-condensed font-semibold uppercase text-[11px] tracking-[2.5px] px-6 py-[15px] rounded-[4px] border border-[rgba(200,214,232,0.2)] text-center">
+            </Link>
+            <Link
+              to={"/donate"}
+              className="bg-transparent text-[rgba(200,214,232,0.7)] font-condensed font-semibold uppercase text-[11px] tracking-[2.5px] px-6 py-[15px] rounded-[4px] border border-[rgba(200,214,232,0.2)] text-center"
+              style={{ padding: "14px 28px", color: "rgba(200,214,232,0.7)" }}
+            >
               Donate Now
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -130,8 +142,6 @@ const Hero = () => {
             </div>
           ))}
         </div>
-
-        {/* ── QUOTE STRIP — pinned to bottom ─── */}
       </section>
 
       {/* ── MARQUEE STRIP ────────────────────── */}

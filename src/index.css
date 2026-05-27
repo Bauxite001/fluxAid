@@ -41,6 +41,8 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scrollbar-width: none;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 html::-webkit-scrollbar {
@@ -53,6 +55,7 @@ body {
   font-family: "Barlow", sans-serif;
   font-weight: 300;
   overflow-x: hidden;
+  width: 100%;
 }
 
 /* ── TYPOGRAPHY ───────────────────────────── */
