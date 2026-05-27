@@ -24,57 +24,150 @@ const Contact = () => {
     enquiryType: "",
     message: "",
   });
-
   const [submitted, setSubmitted] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Replace with real submission logic — Formspree, EmailJS, backend API, etc.
-    console.log("Contact form submitted:", form);
+    console.log("Contact form:", form);
     setSubmitted(true);
   };
 
-  const inputClass = `
-    bg-[#161616] border border-[#2A2A2A]
-    font-body font-light text-[14px] text-[#F5F5F5]
-    px-5 py-4 rounded-sm outline-none
-    placeholder:text-[#3A3A3A]
-    focus:border-[#9A9A9A] transition-colors duration-200
-    w-full
-  `;
+  const inp = {
+    width: "100%",
+    padding: "14px 16px",
+    background: "#F8F9FB",
+    border: "1.5px solid #E5E7EB",
+    borderRadius: "8px",
+    outline: "none",
+    fontFamily: "'Barlow', sans-serif",
+    fontSize: "14px",
+    color: "#0D1117",
+    boxSizing: "border-box",
+    transition: "border-color 0.2s",
+  };
 
-  const labelClass = `
-    font-condensed font-bold uppercase
-    text-[9px] tracking-[2.5px] text-[#9A9A9A]
-  `;
+  const lbl = {
+    fontFamily: "'Barlow Condensed', sans-serif",
+    fontSize: "9px",
+    fontWeight: 700,
+    letterSpacing: "2.5px",
+    textTransform: "uppercase",
+    color: "#9CA3AF",
+    display: "block",
+    marginBottom: "6px",
+  };
 
   return (
-    <div className="bg-[#080808] min-h-screen">
+    <div style={{ background: "#F8F9FB", minHeight: "100vh" }}>
       {/* ── HERO ─────────────────────────────── */}
-      <section className="relative px-4 lg:px-16 py-20 lg:py-28 bg-[#0F0F0F] border-b border-white/[0.07] overflow-hidden">
+      <section
+        style={{
+          background: "#0F1E35",
+          padding:
+            "clamp(64px,10vw,100px) clamp(20px,5vw,80px) clamp(56px,7vw,80px)",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
         <div
-          className="absolute inset-0 pointer-events-none"
           style={{
+            position: "absolute",
+            inset: 0,
             backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
+              "linear-gradient(rgba(47,138,201,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(47,138,201,0.06) 1px, transparent 1px)",
             backgroundSize: "60px 60px",
+            pointerEvents: "none",
           }}
         />
-        <div className="relative z-10 max-w-[680px]">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="w-[5px] h-[5px] rounded-full bg-[#9A9A9A]" />
-            <span className="font-condensed font-semibold uppercase text-[10px] tracking-[3.5px] text-[#9A9A9A]">
+        <div
+          style={{
+            position: "absolute",
+            top: "-80px",
+            right: "-80px",
+            width: "360px",
+            height: "360px",
+            background:
+              "radial-gradient(circle, rgba(108,96,158,0.22) 0%, transparent 65%)",
+            borderRadius: "50%",
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: "-60px",
+            left: "200px",
+            width: "280px",
+            height: "280px",
+            background:
+              "radial-gradient(circle, rgba(47,138,201,0.15) 0%, transparent 65%)",
+            borderRadius: "50%",
+            pointerEvents: "none",
+          }}
+        />
+
+        <div style={{ maxWidth: "680px", position: "relative", zIndex: 1 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              marginBottom: "20px",
+            }}
+          >
+            <span
+              style={{
+                width: "5px",
+                height: "5px",
+                borderRadius: "50%",
+                background: "#2F8AC9",
+                display: "inline-block",
+              }}
+            />
+            <span
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "10px",
+                fontWeight: 600,
+                letterSpacing: "3.5px",
+                textTransform: "uppercase",
+                color: "#2F8AC9",
+              }}
+            >
               Get In Touch
             </span>
           </div>
-          <h1 className="font-display font-bold text-[#F5F5F5] text-[52px] lg:text-[80px] leading-[0.95] tracking-[-2px] mb-6">
-            Let's <em className="italic font-normal text-[#E8E0D0]">talk</em>
+          <h1
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "clamp(48px,8vw,84px)",
+              fontWeight: 700,
+              lineHeight: 0.95,
+              letterSpacing: "-2px",
+              color: "#F0F6FF",
+              marginBottom: "20px",
+            }}
+          >
+            Let's{" "}
+            <em
+              style={{ fontStyle: "italic", fontWeight: 400, color: "#9B8EC4" }}
+            >
+              talk
+            </em>
           </h1>
-          <p className="font-body font-light text-[15px] leading-[1.8] text-[#9A9A9A] max-w-[500px]">
+          <p
+            style={{
+              fontFamily: "'Barlow', sans-serif",
+              fontSize: "15px",
+              fontWeight: 300,
+              lineHeight: 1.8,
+              color: "rgba(200,214,232,0.6)",
+              maxWidth: "500px",
+              margin: 0,
+            }}
+          >
             Whether you want to partner, nominate someone for the DANGA Award,
             ask about our programmes, or just say hello — we want to hear from
             you.
@@ -82,198 +175,481 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* ── MAIN CONTENT ─────────────────────── */}
-      <section className="px-4 lg:px-16 py-16 lg:py-24 border-b border-white/[0.07]">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-16 items-start">
-          {/* ── FORM ───────────────────────────── */}
+      {/* Wave */}
+      <div style={{ background: "#0F1E35", lineHeight: 0 }}>
+        <svg
+          viewBox="0 0 1440 50"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ display: "block", width: "100%" }}
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,0 C480,50 960,50 1440,0 L1440,50 L0,50 Z"
+            fill="#F8F9FB"
+          />
+        </svg>
+      </div>
+
+      {/* ── MAIN ─────────────────────────────── */}
+      <section style={{ padding: "clamp(40px,6vw,72px) clamp(20px,5vw,80px)" }}>
+        <div
+          style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            display: "grid",
+            gridTemplateColumns: "1fr clamp(280px,28vw,380px)",
+            gap: "clamp(32px,5vw,64px)",
+            alignItems: "start",
+          }}
+        >
+          {/* ── FORM ─────────────────────────── */}
           {submitted ? (
-            <div className="bg-[#161616] border border-white/[0.07] p-12 flex flex-col items-center justify-center text-center min-h-[400px] gap-6">
-              <span className="text-[48px] opacity-60">✉️</span>
-              <h3 className="font-display font-bold text-[#F5F5F5] text-[28px] leading-[1.2]">
+            <div
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid #E5E7EB",
+                borderRadius: "20px",
+                padding: "64px 48px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                minHeight: "400px",
+                gap: "20px",
+                borderTop: "3px solid #2F8AC9",
+              }}
+            >
+              <span style={{ fontSize: "52px", opacity: 0.7 }}>✉️</span>
+              <h3
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(24px,3vw,32px)",
+                  fontWeight: 700,
+                  color: "#0D1117",
+                }}
+              >
                 Message received
               </h3>
-              <p className="font-body font-light text-[14px] leading-[1.8] text-[#9A9A9A] max-w-[360px]">
+              <p
+                style={{
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 300,
+                  lineHeight: 1.8,
+                  color: "#6B7280",
+                  maxWidth: "360px",
+                }}
+              >
                 Thank you for reaching out to {ORG_NAME}. We will get back to
                 you within 3–5 working days.
               </p>
               <button
                 onClick={() => setSubmitted(false)}
-                className="
-                  font-condensed font-bold uppercase text-[10px] tracking-[2.5px]
-                  text-[#9A9A9A] border border-[#2A2A2A] px-6 py-3 rounded-sm
-                  hover:border-[#9A9A9A] hover:text-[#C8C8C8]
-                  transition-all duration-200 cursor-pointer bg-transparent
-                "
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "10px",
+                  fontWeight: 700,
+                  letterSpacing: "2.5px",
+                  textTransform: "uppercase",
+                  color: "#6C609E",
+                  border: "1.5px solid rgba(108,96,158,0.3)",
+                  background: "transparent",
+                  padding: "11px 22px",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
               >
                 Send Another Message
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              {/* Name */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <label className={labelClass}>First Name *</label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    required
-                    value={form.firstName}
-                    onChange={handleChange}
-                    className={inputClass}
-                    placeholder="First name"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className={labelClass}>Last Name *</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    required
-                    value={form.lastName}
-                    onChange={handleChange}
-                    className={inputClass}
-                    placeholder="Last name"
-                  />
-                </div>
-              </div>
+            <form
+              onSubmit={handleSubmit}
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid #E5E7EB",
+                borderRadius: "20px",
+                padding: "clamp(24px,4vw,44px)",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.05)",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              {/* Top accent */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "3px",
+                  background: "linear-gradient(90deg, #2F8AC9, #6C609E)",
+                  borderRadius: "20px 20px 0 0",
+                }}
+              />
 
-              {/* Email + Phone */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <label className={labelClass}>Email Address *</label>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    value={form.email}
-                    onChange={handleChange}
-                    className={inputClass}
-                    placeholder="your@email.com"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className={labelClass}>Phone Number</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                    className={inputClass}
-                    placeholder="+234 800 000 0000"
-                  />
-                </div>
-              </div>
+              <h2
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(28px,3vw,36px)",
+                  fontWeight: 700,
+                  color: "#0D1117",
+                  marginBottom: "6px",
+                }}
+              >
+                Send a Message
+              </h2>
+              <p
+                style={{
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: "13px",
+                  fontWeight: 300,
+                  color: "#9CA3AF",
+                  marginBottom: "28px",
+                }}
+              >
+                Fill in the form below and we'll get back to you.
+              </p>
 
-              {/* Organisation */}
-              <div className="flex flex-col gap-2">
-                <label className={labelClass}>Organisation / Company</label>
-                <input
-                  type="text"
-                  name="organisation"
-                  value={form.organisation}
-                  onChange={handleChange}
-                  className={inputClass}
-                  placeholder="Optional — your organisation or company name"
-                />
-              </div>
-
-              {/* Enquiry type */}
-              <div className="flex flex-col gap-2">
-                <label className={labelClass}>
-                  What Is Your Enquiry About? *
-                </label>
-                <select
-                  name="enquiryType"
-                  required
-                  value={form.enquiryType}
-                  onChange={handleChange}
-                  className={`${inputClass} appearance-none cursor-pointer`}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "14px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "12px",
+                  }}
                 >
-                  <option value="" disabled>
-                    Select enquiry type
-                  </option>
-                  {ENQUIRY_TYPES.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
+                  <div>
+                    <label style={lbl}>First Name *</label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      required
+                      value={form.firstName}
+                      onChange={handleChange}
+                      placeholder="First name"
+                      style={inp}
+                      onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
+                      onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                    />
+                  </div>
+                  <div>
+                    <label style={lbl}>Last Name *</label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      required
+                      value={form.lastName}
+                      onChange={handleChange}
+                      placeholder="Last name"
+                      style={inp}
+                      onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
+                      onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                    />
+                  </div>
+                </div>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "12px",
+                  }}
+                >
+                  <div>
+                    <label style={lbl}>Email *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      value={form.email}
+                      onChange={handleChange}
+                      placeholder="your@email.com"
+                      style={inp}
+                      onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
+                      onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                    />
+                  </div>
+                  <div>
+                    <label style={lbl}>Phone</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={form.phone}
+                      onChange={handleChange}
+                      placeholder="+234 800 000 0000"
+                      style={inp}
+                      onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
+                      onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label style={lbl}>Organisation</label>
+                  <input
+                    type="text"
+                    name="organisation"
+                    value={form.organisation}
+                    onChange={handleChange}
+                    placeholder="Optional"
+                    style={inp}
+                    onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
+                    onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                  />
+                </div>
+                <div>
+                  <label style={lbl}>Enquiry Type *</label>
+                  <select
+                    name="enquiryType"
+                    required
+                    value={form.enquiryType}
+                    onChange={handleChange}
+                    style={{ ...inp, appearance: "none", cursor: "pointer" }}
+                    onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
+                    onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                  >
+                    <option value="" disabled>
+                      Select enquiry type
                     </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Message */}
-              <div className="flex flex-col gap-2">
-                <label className={labelClass}>Your Message *</label>
-                <textarea
-                  name="message"
-                  required
-                  value={form.message}
-                  onChange={handleChange}
-                  rows={6}
-                  className={`${inputClass} resize-none`}
-                  placeholder="Tell us what's on your mind..."
-                />
-              </div>
-
-              {/* Submit */}
-              <div className="pt-2">
+                    {ENQUIRY_TYPES.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={lbl}>Message *</label>
+                  <textarea
+                    name="message"
+                    required
+                    rows={5}
+                    value={form.message}
+                    onChange={handleChange}
+                    placeholder="Tell us what's on your mind..."
+                    style={{ ...inp, resize: "none" }}
+                    onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
+                    onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                  />
+                </div>
                 <button
                   type="submit"
-                  className="
-                    w-full bg-[#F5F5F5] text-[#080808]
-                    font-condensed font-bold uppercase text-[12px] tracking-[3px]
-                    py-5 rounded-sm border-0 cursor-pointer
-                    hover:bg-[#C8C8C8] transition-colors duration-200
-                    active:scale-[0.99]
-                  "
+                  style={{
+                    width: "100%",
+                    padding: "15px",
+                    background: "#2F8AC9",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    letterSpacing: "2.5px",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                    marginTop: "6px",
+                  }}
                 >
                   Send Message →
                 </button>
-                <p className="font-body font-light text-[11px] text-[#2A2A2A] text-center mt-3">
+                <p
+                  style={{
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: "11px",
+                    color: "#9CA3AF",
+                    textAlign: "center",
+                    margin: 0,
+                  }}
+                >
                   We respond within 3–5 working days · No spam ever
                 </p>
               </div>
             </form>
           )}
 
-          {/* ── SIDEBAR ────────────────────────── */}
-          <div className="flex flex-col gap-4 lg:sticky lg:top-[100px]">
-            {/* Abuja office */}
-            <div className="bg-[#161616] border border-white/[0.07] p-7">
-              <h5 className="font-condensed font-bold uppercase text-[9px] tracking-[3px] text-[#9A9A9A] mb-5">
+          {/* ── SIDEBAR ──────────────────────── */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              position: "sticky",
+              top: "100px",
+            }}
+          >
+            {/* Abuja */}
+            <div
+              style={{
+                background: "#0F1E35",
+                borderRadius: "14px",
+                padding: "22px 24px",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  right: "-20px",
+                  width: "100px",
+                  height: "100px",
+                  background:
+                    "radial-gradient(circle, rgba(47,138,201,0.2) 0%, transparent 70%)",
+                  borderRadius: "50%",
+                  pointerEvents: "none",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "2px",
+                  background: "linear-gradient(90deg, #2F8AC9, transparent)",
+                  borderRadius: "14px 14px 0 0",
+                }}
+              />
+              <h5
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "9px",
+                  fontWeight: 700,
+                  letterSpacing: "3px",
+                  textTransform: "uppercase",
+                  color: "#2F8AC9",
+                  marginBottom: "14px",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
                 Abuja Office
               </h5>
-              <div className="flex flex-col gap-3">
-                <p className="font-body font-light text-[13px] leading-[1.8] text-[#C8C8C8]">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: "13px",
+                    fontWeight: 300,
+                    lineHeight: 1.7,
+                    color: "rgba(200,214,232,0.65)",
+                    margin: 0,
+                  }}
+                >
                   {CONTACT.abuja}
                 </p>
-                <a
-                  href={`tel:${CONTACT.phone1}`}
-                  className="font-body font-light text-[13px] text-[#9A9A9A] hover:text-[#C8C8C8] transition-colors duration-200 no-underline"
-                >
-                  {CONTACT.phone1}
-                </a>
-                <a
-                  href={`tel:${CONTACT.phone2}`}
-                  className="font-body font-light text-[13px] text-[#9A9A9A] hover:text-[#C8C8C8] transition-colors duration-200 no-underline"
-                >
-                  {CONTACT.phone2}
-                </a>
+                {[CONTACT.phone1, CONTACT.phone2].map((p) => (
+                  <a
+                    key={p}
+                    href={`tel:${p}`}
+                    style={{
+                      fontFamily: "'Barlow', sans-serif",
+                      fontSize: "13px",
+                      fontWeight: 300,
+                      color: "rgba(200,214,232,0.5)",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {p}
+                  </a>
+                ))}
               </div>
             </div>
 
-            {/* Lagos office */}
-            <div className="bg-[#161616] border border-white/[0.07] p-7">
-              <h5 className="font-condensed font-bold uppercase text-[9px] tracking-[3px] text-[#9A9A9A] mb-5">
+            {/* Lagos */}
+            <div
+              style={{
+                background: "#0F1E35",
+                borderRadius: "14px",
+                padding: "22px 24px",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "2px",
+                  background: "linear-gradient(90deg, #6C609E, transparent)",
+                  borderRadius: "14px 14px 0 0",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  right: "-20px",
+                  width: "100px",
+                  height: "100px",
+                  background:
+                    "radial-gradient(circle, rgba(108,96,158,0.2) 0%, transparent 70%)",
+                  borderRadius: "50%",
+                  pointerEvents: "none",
+                }}
+              />
+              <h5
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "9px",
+                  fontWeight: 700,
+                  letterSpacing: "3px",
+                  textTransform: "uppercase",
+                  color: "#6C609E",
+                  marginBottom: "14px",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
                 Lagos Office
               </h5>
-              <div className="flex flex-col gap-3">
-                <p className="font-body font-light text-[13px] leading-[1.8] text-[#C8C8C8]">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: "13px",
+                    fontWeight: 300,
+                    lineHeight: 1.7,
+                    color: "rgba(200,214,232,0.65)",
+                    margin: 0,
+                  }}
+                >
                   {CONTACT.lagos}
                 </p>
                 <a
                   href={`tel:${CONTACT.phone3}`}
-                  className="font-body font-light text-[13px] text-[#9A9A9A] hover:text-[#C8C8C8] transition-colors duration-200 no-underline"
+                  style={{
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: "13px",
+                    fontWeight: 300,
+                    color: "rgba(200,214,232,0.5)",
+                    textDecoration: "none",
+                  }}
                 >
                   {CONTACT.phone3}
                 </a>
@@ -281,71 +657,166 @@ const Contact = () => {
             </div>
 
             {/* Email */}
-            <div className="bg-[#161616] border border-white/[0.07] p-7">
-              <h5 className="font-condensed font-bold uppercase text-[9px] tracking-[3px] text-[#9A9A9A] mb-5">
+            <div
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid #E5E7EB",
+                borderRadius: "14px",
+                padding: "22px 24px",
+              }}
+            >
+              <h5
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "9px",
+                  fontWeight: 700,
+                  letterSpacing: "3px",
+                  textTransform: "uppercase",
+                  color: "#9CA3AF",
+                  marginBottom: "12px",
+                }}
+              >
                 Email Us
               </h5>
-              <div className="flex flex-col gap-3">
-                <a
-                  href={`mailto:${CONTACT.email1}`}
-                  className="font-body font-light text-[13px] text-[#9A9A9A] hover:text-[#C8C8C8] transition-colors duration-200 no-underline break-all"
-                >
-                  {CONTACT.email1}
-                </a>
-                <a
-                  href={`mailto:${CONTACT.email2}`}
-                  className="font-body font-light text-[13px] text-[#9A9A9A] hover:text-[#C8C8C8] transition-colors duration-200 no-underline"
-                >
-                  {CONTACT.email2}
-                </a>
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: "6px" }}
+              >
+                {[CONTACT.email1, CONTACT.email2].map((e) => (
+                  <a
+                    key={e}
+                    href={`mailto:${e}`}
+                    style={{
+                      fontFamily: "'Barlow', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 300,
+                      color: "#2F8AC9",
+                      textDecoration: "none",
+                      wordBreak: "break-all",
+                    }}
+                  >
+                    {e}
+                  </a>
+                ))}
               </div>
             </div>
 
             {/* Social */}
-            <div className="bg-[#161616] border border-white/[0.07] p-7">
-              <h5 className="font-condensed font-bold uppercase text-[9px] tracking-[3px] text-[#9A9A9A] mb-5">
+            <div
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid #E5E7EB",
+                borderRadius: "14px",
+                padding: "22px 24px",
+              }}
+            >
+              <h5
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "9px",
+                  fontWeight: 700,
+                  letterSpacing: "3px",
+                  textTransform: "uppercase",
+                  color: "#9CA3AF",
+                  marginBottom: "14px",
+                }}
+              >
                 Follow Us
               </h5>
-              <div className="flex items-center gap-2">
+              <div
+                style={{ display: "flex", gap: "8px", marginBottom: "10px" }}
+              >
                 {[
-                  { label: "𝕏", href: "#" },
-                  { label: "in", href: "#" },
-                  { label: "IG", href: "#" },
-                  { label: "YT", href: "#" },
+                  { l: "𝕏", h: "#" },
+                  { l: "in", h: "#" },
+                  { l: "IG", h: "#" },
+                  { l: "YT", h: "#" },
                 ].map((s) => (
                   <a
-                    key={s.label}
-                    href={s.href}
-                    className="
-                      w-10 h-10 flex items-center justify-center
-                      border border-[#2A2A2A] rounded-sm
-                      font-condensed font-bold text-[12px] text-[#9A9A9A]
-                      hover:border-[#9A9A9A] hover:text-[#F5F5F5]
-                      transition-all duration-200 no-underline
-                    "
+                    key={s.l}
+                    href={s.h}
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "1.5px solid #E5E7EB",
+                      borderRadius: "6px",
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      color: "#6B7280",
+                      textDecoration: "none",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "#2F8AC9";
+                      e.currentTarget.style.color = "#2F8AC9";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "#E5E7EB";
+                      e.currentTarget.style.color = "#6B7280";
+                    }}
                   >
-                    {s.label}
+                    {s.l}
                   </a>
                 ))}
               </div>
-              <p className="font-body font-light text-[12px] text-[#9A9A9A] mt-3">
+              <p
+                style={{
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: "11px",
+                  fontWeight: 300,
+                  color: "#9CA3AF",
+                  margin: 0,
+                }}
+              >
                 {CONTACT.social}
               </p>
             </div>
 
             {/* Response time */}
-            <div className="bg-[#0F0F0F] border border-white/[0.07] p-6">
-              <div className="flex items-start gap-4">
-                <span className="text-[20px] opacity-40 flex-shrink-0">⏱</span>
-                <div>
-                  <div className="font-condensed font-bold uppercase text-[9px] tracking-[2px] text-[#9A9A9A] mb-2">
-                    Response Time
-                  </div>
-                  <p className="font-body font-light text-[12px] leading-[1.7] text-[#9A9A9A]">
-                    We aim to respond to all enquiries within 3–5 working days.
-                    For urgent matters, please call our offices directly.
-                  </p>
+            <div
+              style={{
+                background: "#F8F9FB",
+                border: "1px solid #E5E7EB",
+                borderRadius: "14px",
+                padding: "18px 20px",
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "12px",
+              }}
+            >
+              <span style={{ fontSize: "18px", opacity: 0.5, flexShrink: 0 }}>
+                ⏱
+              </span>
+              <div>
+                <div
+                  style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: "9px",
+                    fontWeight: 700,
+                    letterSpacing: "2px",
+                    textTransform: "uppercase",
+                    color: "#9CA3AF",
+                    marginBottom: "5px",
+                  }}
+                >
+                  Response Time
                 </div>
+                <p
+                  style={{
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: "12px",
+                    fontWeight: 300,
+                    lineHeight: 1.7,
+                    color: "#9CA3AF",
+                    margin: 0,
+                  }}
+                >
+                  We aim to respond within 3–5 working days. For urgent matters,
+                  please call us directly.
+                </p>
               </div>
             </div>
           </div>

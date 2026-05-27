@@ -39,12 +39,12 @@ const Navbar = () => {
       {/* ── NAV BAR ──────────────────────────── */}
       <nav
         className={`
-          fixed top-0 left-0 right-0 z-50
-          h-[68px]
-          flex items-center justify-between
-          transition-all duration-300
-          ${isScrolled ? "bg-[#2F8AC9]/95 backdrop-blur-xl border-b border-white/[0.07]" : "bg-[#2F8AC9]/80 backdrop-blur-md"}
-        `}
+     fixed top-0 left-0 right-0 z-50
+     h-[68px] lg:w-full w-screen
+     flex items-center justify-between
+     transition-all duration-300
+     ${isScrolled ? "bg-[#2F8AC9]/95 backdrop-blur-xl border-b border-white/[0.07]" : "bg-[#2F8AC9]/80 backdrop-blur-md"}
+    `}
         style={{ paddingLeft: "8px", paddingRight: "8px" }}
       >
         {/* ── LOGO ─────────────────────────── */}
@@ -56,19 +56,19 @@ const Navbar = () => {
           <div className="flex flex-col">
             <span
               className="
-            font-condensed font-bold uppercase
-            text-[15px] tracking-[4px] text-flux-white
-            leading-none
-          "
+      font-condensed font-bold uppercase
+      text-[15px] tracking-[4px] text-flux-white
+      leading-none
+     "
             >
               {ORG_NAME}
             </span>
             <span
               className="
-            font-body font-normal
-            text-[9px] tracking-[2.5px] uppercase text-flux-white
-            leading-none
-          "
+      font-body font-normal
+      text-[9px] tracking-[2.5px] uppercase text-flux-white
+      leading-none
+     "
             >
               {ORG_TAGLINE}
             </span>
@@ -83,10 +83,10 @@ const Navbar = () => {
               href={link.href}
               style={{ color: "white" }}
               className="
-  font-condensed uppercase
-  text-[12px] tracking-[1.5px]
-  transition-colors duration-200 no-underline
-  text-white hover:text-white/80"
+ font-condensed uppercase
+ text-[12px] tracking-[1.5px]
+ transition-colors duration-200 no-underline
+ text-white hover:text-white/80"
             >
               {link.label}
             </a>
@@ -98,12 +98,12 @@ const Navbar = () => {
           <a
             href="/volunteer"
             className="
-              font-condensed font-semibold uppercase
-              text-[11px] tracking-[2px] text-white
-              border-b border-flux-gray pb-[1px]
-              hover:text-flux-silver hover:border-flux-silver
-              transition-colors duration-200 no-underline
-            "
+       font-condensed font-semibold uppercase
+       text-[11px] tracking-[2px] text-white
+       border-b border-flux-gray pb-[1px]
+       hover:text-flux-silver hover:border-flux-silver
+       transition-colors duration-200 no-underline
+      "
             style={{ color: "white" }}
           >
             Volunteer
@@ -136,24 +136,24 @@ const Navbar = () => {
           >
             <span
               className={`
-              block w-[22px] h-[1.5px] bg-white
-              transition-all duration-300 origin-center
-              ${menuOpen ? "rotate-45 translate-y-[6.5px]" : ""}
-            `}
+       block w-[22px] h-[1.5px] bg-white
+       transition-all duration-300 origin-center
+       ${menuOpen ? "rotate-45 translate-y-[6.5px]" : ""}
+      `}
             />
             <span
               className={`
-              block h-[1.5px] bg-white
-              transition-all duration-300
-              ${menuOpen ? "opacity-0 w-[22px]" : "w-[22px]"}
-            `}
+       block h-[1.5px] bg-white
+       transition-all duration-300
+       ${menuOpen ? "opacity-0 w-[22px]" : "w-[22px]"}
+      `}
             />
             <span
               className={`
-              block h-[1.5px] bg-flux-white
-              transition-all duration-300 origin-center
-              ${menuOpen ? "-rotate-45 -translate-y-[6.5px] w-[22px]" : "w-[14px]"}
-            `}
+       block h-[1.5px] bg-flux-white
+       transition-all duration-300 origin-center
+       ${menuOpen ? "-rotate-45 -translate-y-[6.5px] w-[22px]" : "w-[14px]"}
+      `}
             />
           </button>
         </div>
@@ -162,22 +162,22 @@ const Navbar = () => {
       {/* ── MOBILE MENU OVERLAY ──────────────── */}
       <div
         className={`
-          fixed inset-0 z-40 bg-flux-black
-          flex flex-col
-          transition-all duration-300 ease-in-out
-          lg:hidden
-          ${
-            menuOpen
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
-          }
-        `}
+     fixed inset-0 z-40 bg-flux-black w-screen
+     flex flex-col
+     transition-all duration-300 ease-in-out
+     lg:hidden
+     ${
+       menuOpen
+         ? "opacity-100 pointer-events-auto"
+         : "opacity-0 pointer-events-none"
+     }
+    `}
       >
         {/* Top spacer for nav height */}
         <div className="h-[68px] flex-shrink-0" />
 
         {/* Menu content */}
-        <div className="flex-1 flex flex-col justify-between px-6 py-10 overflow-y-auto">
+        <div className="flex-1 flex flex-col gap-4 px-6 py-10 overflow-y-auto">
           {/* Links */}
           <div className="flex flex-col gap-0">
             {NAV_LINKS.map((link, i) => (
@@ -186,19 +186,15 @@ const Navbar = () => {
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
                 className={`
-                  flex items-center justify-between
-                  font-display font-bold
-                  text-[32px] leading-[1.1] tracking-[-0.5px]
-                  text-flux-white no-underline
-                  py-5 border-b border-white/[0.07]
-                  hover:text-flux-accent
-                  transition-colors duration-200
-                  ${
-                    menuOpen
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-4"
-                  }
-                `}
+         flex items-center justify-between
+         font-display font-bold
+         text-[32px] leading-[1.1] tracking-[-0.5px]
+         text-flux-white no-underline
+         py-5 border-b border-white/[0.07]
+         hover:text-flux-accent
+         transition-colors duration-200
+         ${menuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
+        `}
                 style={{
                   transitionDelay: menuOpen ? `${i * 50}ms` : "0ms",
                   transition: `color 200ms, opacity 300ms ${i * 50}ms, transform 300ms ${i * 50}ms`,

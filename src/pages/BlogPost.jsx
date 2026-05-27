@@ -1,10 +1,7 @@
 // pages/BlogPost.jsx
 
 import { useParams } from "react-router-dom";
-import Chip from "../components/Chip";
-import Button from "../components/Button";
 
-// Placeholder posts — replace with CMS/API call using slug later
 const POSTS = [
   {
     slug: "why-flux-aid-was-founded",
@@ -21,41 +18,24 @@ const POSTS = [
         type: "paragraph",
         text: "Flux Aid Initiative was not born in a boardroom. It was born from an observation — a quiet, persistent frustration with a continent full of extraordinary people whose work goes unrecognised, whose communities are underserved, and whose potential is consistently underestimated.",
       },
-      {
-        type: "heading",
-        text: "The Problem We Saw",
-      },
+      { type: "heading", text: "The Problem We Saw" },
       {
         type: "paragraph",
-        text: "Across Nigeria and Africa, we kept seeing the same pattern: men and women doing remarkable work in their communities — advocating for rights, building businesses, raising children with integrity, serving without applause — and receiving nothing in return. No recognition. No support. No amplification.",
-      },
-      {
-        type: "paragraph",
-        text: "At the same time, we saw institutions struggling to reach the communities they were meant to serve. Policies that sounded good on paper but failed in practice. Aid that arrived without context. Development work that left when the funding did.",
+        text: "Across Nigeria and Africa, we kept seeing the same pattern: men and women doing remarkable work in their communities — advocating for rights, building businesses, raising children with integrity, serving without applause — and receiving nothing in return.",
       },
       {
         type: "quote",
         text: "Hard work, integrity and transparency are the hallmark of a successful human achievement. Men and women who are selfless and dedicated to their responsibilities are never forgotten in the annals of history.",
       },
-      {
-        type: "heading",
-        text: "What We Decided to Do",
-      },
+      { type: "heading", text: "What We Decided to Do" },
       {
         type: "paragraph",
-        text: "We decided to build something different. An organisation rooted in community — not in foreign funding cycles or donor agendas. An organisation that celebrates the people already doing the work, while building the infrastructure to support those who have been left behind.",
+        text: "We decided to build something different. An organisation rooted in community — not in foreign funding cycles or donor agendas. An organisation that celebrates the people already doing the work, while building the infrastructure to support those left behind.",
       },
+      { type: "heading", text: "What Drives Us Today" },
       {
         type: "paragraph",
-        text: "Flux Aid Initiative was established on five core values: enduring achievement, selfless service to humanity, integrity, patriotism, and good conduct. These are not aspirational. They are operational — embedded in every decision we make and every person we recognise.",
-      },
-      {
-        type: "heading",
-        text: "What Drives Us Today",
-      },
-      {
-        type: "paragraph",
-        text: "Every day, our teams go into communities across Nigeria, Ghana, Kenya, Uganda, Senegal, and beyond. They run clinics, deliver books, facilitate workshops, plant trees, and tell stories that would otherwise go untold. This is what drives us — the daily, unglamorous, essential work of building a better Africa from the ground up.",
+        text: "Every day, our teams go into communities across Nigeria, Ghana, Kenya, Uganda, Senegal, and beyond. They run clinics, deliver books, facilitate workshops, plant trees, and tell stories that would otherwise go untold.",
       },
       {
         type: "paragraph",
@@ -90,33 +70,19 @@ const POSTS = [
         type: "paragraph",
         text: "Nigeria is full of people doing extraordinary things with very little recognition. The Distinguished Ambassador of Change National Gold Award — DANGA — exists to change that.",
       },
-      {
-        type: "heading",
-        text: "What is the DANGA Award?",
-      },
+      { type: "heading", text: "What is the DANGA Award?" },
       {
         type: "paragraph",
-        text: "DANGA is a private sector national award project dedicated to men and women of outstanding qualities whose contribution to national development is viable and verifiable. It is not a government award. It is not sponsored by a political party. It exists purely to celebrate excellence — in any field, at any level.",
+        text: "DANGA is a private sector national award project dedicated to men and women of outstanding qualities whose contribution to national development is viable and verifiable.",
       },
       {
         type: "quote",
         text: "They move from one higher position to another and their achievements have no boundary.",
       },
-      {
-        type: "heading",
-        text: "Who Qualifies?",
-      },
+      { type: "heading", text: "Why It Matters" },
       {
         type: "paragraph",
-        text: "The award recognises Nigerians who have demonstrated enduring achievement in their field, selfless service to humanity, integrity in public and private conduct, patriotism, and consistently good behaviour. These are people whose positive antecedents are still alive — whose work continues to shape communities even when no one is watching.",
-      },
-      {
-        type: "heading",
-        text: "Why It Matters",
-      },
-      {
-        type: "paragraph",
-        text: "When we celebrate excellence, we set a standard. We tell younger generations that integrity is rewarded — that hard work is seen — that service to humanity is one of the highest callings a person can answer. That is the purpose of DANGA. Not just to give an award, but to shift the culture.",
+        text: "When we celebrate excellence, we set a standard. We tell younger generations that integrity is rewarded — that hard work is seen — that service to humanity is one of the highest callings a person can answer.",
       },
     ],
     related: [
@@ -134,274 +100,785 @@ const POSTS = [
   },
 ];
 
+const CAT_COLOR = {
+  "About Us": "#2F8AC9",
+  Awards: "#6C609E",
+  Opinion: "#2F8AC9",
+  "Impact Report": "#6C609E",
+  "Field Story": "#2F8AC9",
+};
+
 const BlogPost = () => {
   const { slug } = useParams();
   const post = POSTS.find((p) => p.slug === slug);
 
-  // 404 state
   if (!post) {
     return (
-      <div className="bg-[#080808] min-h-screen flex flex-col items-center justify-center text-center px-6">
-        <span className="text-[64px] opacity-20 mb-6 select-none">📄</span>
-        <h1 className="font-display font-bold text-[#F5F5F5] text-[40px] mb-4">
+      <div
+        style={{
+          background: "#F8F9FB",
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          padding: "40px",
+        }}
+      >
+        <span style={{ fontSize: "64px", opacity: 0.2, marginBottom: "24px" }}>
+          📄
+        </span>
+        <h1
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: "40px",
+            fontWeight: 700,
+            color: "#0D1117",
+            marginBottom: "14px",
+          }}
+        >
           Post not found
         </h1>
-        <p className="font-body font-light text-[15px] text-[#9A9A9A] mb-8">
+        <p
+          style={{
+            fontFamily: "'Barlow', sans-serif",
+            fontSize: "15px",
+            fontWeight: 300,
+            color: "#9CA3AF",
+            marginBottom: "28px",
+          }}
+        >
           This post doesn't exist or may have been moved.
         </p>
-        <Button href="/blog" variant="primary">
+        <a
+          href="/blog"
+          style={{
+            background: "#2F8AC9",
+            color: "white",
+            textDecoration: "none",
+            padding: "13px 28px",
+            borderRadius: "4px",
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: "11px",
+            fontWeight: 700,
+            letterSpacing: "2px",
+            textTransform: "uppercase",
+          }}
+        >
           Back to Blog
-        </Button>
+        </a>
       </div>
     );
   }
 
+  const color = CAT_COLOR[post.category] || "#2F8AC9";
+
   return (
-    <div className="bg-[#080808] min-h-screen">
+    <div style={{ background: "#F8F9FB", minHeight: "100vh" }}>
       {/* ── HERO ─────────────────────────────── */}
-      <section className="relative px-4 lg:px-16 py-20 lg:py-28 bg-[#0F0F0F] border-b border-white/[0.07] overflow-hidden">
+      <section
+        style={{
+          background: "#0F1E35",
+          padding:
+            "clamp(64px,10vw,100px) clamp(20px,5vw,80px) clamp(48px,6vw,80px)",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
         <div
-          className="absolute inset-0 pointer-events-none"
           style={{
+            position: "absolute",
+            inset: 0,
             backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
+              "linear-gradient(rgba(47,138,201,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(47,138,201,0.06) 1px, transparent 1px)",
             backgroundSize: "60px 60px",
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: "-80px",
+            right: "-80px",
+            width: "320px",
+            height: "320px",
+            background:
+              "radial-gradient(circle, rgba(108,96,158,0.2) 0%, transparent 65%)",
+            borderRadius: "50%",
+            pointerEvents: "none",
           }}
         />
 
-        {/* Back link */}
         <a
           href="/blog"
-          className="relative z-10 inline-flex items-center gap-2 font-condensed font-semibold uppercase text-[10px] tracking-[2.5px] text-[#9A9A9A] hover:text-[#C8C8C8] transition-colors duration-200 no-underline mb-10"
+          style={{
+            position: "relative",
+            zIndex: 1,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: "10px",
+            fontWeight: 600,
+            letterSpacing: "2.5px",
+            textTransform: "uppercase",
+            color: "rgba(200,214,232,0.55)",
+            textDecoration: "none",
+            marginBottom: "32px",
+          }}
         >
           ← Back to Blog
         </a>
 
-        <div className="relative z-10 max-w-[780px]">
-          <Chip label={post.category} className="mb-6" />
-
-          <h1 className="font-display font-bold text-[#F5F5F5] text-[36px] lg:text-[60px] leading-[1.0] tracking-[-1px] mb-8">
+        <div style={{ position: "relative", zIndex: 1, maxWidth: "800px" }}>
+          <span
+            style={{
+              display: "inline-block",
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: "9px",
+              fontWeight: 700,
+              letterSpacing: "2px",
+              textTransform: "uppercase",
+              color: color,
+              background: `${color}18`,
+              border: `1px solid ${color}40`,
+              padding: "5px 12px",
+              borderRadius: "4px",
+              marginBottom: "20px",
+            }}
+          >
+            {post.category}
+          </span>
+          <h1
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "clamp(32px,6vw,64px)",
+              fontWeight: 700,
+              lineHeight: 1.05,
+              letterSpacing: "-1px",
+              color: "#F0F6FF",
+              marginBottom: "28px",
+            }}
+          >
             {post.title}
           </h1>
-
-          {/* Meta row */}
-          <div className="flex items-center gap-4 pb-8 border-b border-white/[0.07]">
-            <div className="w-10 h-10 rounded-full bg-[#2A2A2A] border border-[#3A3A3A] flex items-center justify-center font-condensed font-semibold text-[12px] text-[#C8C8C8]">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "14px",
+              paddingBottom: "24px",
+              borderBottom: "1px solid rgba(255,255,255,0.07)",
+            }}
+          >
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                background: color,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "12px",
+                fontWeight: 700,
+                color: "white",
+              }}
+            >
               {post.initials}
             </div>
             <div>
-              <div className="font-body font-medium text-[14px] text-[#C8C8C8]">
+              <div
+                style={{
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  color: "rgba(200,214,232,0.85)",
+                }}
+              >
                 {post.author}
               </div>
-              <div className="flex items-center gap-2">
-                <span className="font-body font-light text-[12px] text-[#9A9A9A]">
-                  {post.date}
-                </span>
-                <span className="w-[3px] h-[3px] rounded-full bg-[#2A2A2A]" />
-                <span className="font-body font-light text-[12px] text-[#9A9A9A]">
-                  {post.readTime}
-                </span>
+              <div
+                style={{
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: "12px",
+                  fontWeight: 300,
+                  color: "rgba(200,214,232,0.45)",
+                  marginTop: "2px",
+                }}
+              >
+                {post.date} · {post.readTime}
               </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Wave */}
+      <div style={{ background: "#0F1E35", lineHeight: 0 }}>
+        <svg
+          viewBox="0 0 1440 50"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ display: "block", width: "100%" }}
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,0 C480,50 960,50 1440,0 L1440,50 L0,50 Z"
+            fill="#F8F9FB"
+          />
+        </svg>
+      </div>
+
       {/* ── CONTENT ──────────────────────────── */}
-      <section className="px-4 lg:px-16 py-16 lg:py-24 border-b border-white/[0.07]">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-16 items-start">
-          {/* Article body */}
-          <article className="max-w-[680px]">
-            {/* Excerpt / lead */}
-            <p className="font-display italic font-normal text-[20px] lg:text-[22px] leading-[1.7] text-[#C8C8C8] mb-10 pb-10 border-b border-white/[0.07]">
+      <section style={{ padding: "clamp(32px,5vw,72px) clamp(20px,5vw,80px)" }}>
+        <div
+          style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            display: "grid",
+            gridTemplateColumns: "1fr clamp(240px,22vw,300px)",
+            gap: "clamp(32px,5vw,64px)",
+            alignItems: "start",
+          }}
+        >
+          {/* Article */}
+          <article style={{ maxWidth: "720px" }}>
+            <p
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontStyle: "italic",
+                fontSize: "clamp(17px,2vw,21px)",
+                lineHeight: 1.75,
+                color: "#374151",
+                marginBottom: "36px",
+                paddingBottom: "36px",
+                borderBottom: "1px solid #E5E7EB",
+              }}
+            >
               {post.excerpt}
             </p>
 
-            {/* Content blocks */}
-            <div className="flex flex-col gap-6">
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+            >
               {post.content.map((block, i) => {
-                if (block.type === "paragraph") {
+                if (block.type === "paragraph")
                   return (
                     <p
                       key={i}
-                      className="font-body font-light text-[15px] lg:text-[16px] leading-[1.9] text-[#9A9A9A]"
+                      style={{
+                        fontFamily: "'Barlow', sans-serif",
+                        fontSize: "clamp(14px,1.5vw,16px)",
+                        fontWeight: 300,
+                        lineHeight: 1.9,
+                        color: "#374151",
+                        margin: 0,
+                      }}
                     >
                       {block.text}
                     </p>
                   );
-                }
-
-                if (block.type === "heading") {
+                if (block.type === "heading")
                   return (
                     <h2
                       key={i}
-                      className="font-display font-bold text-[#F5F5F5] text-[26px] lg:text-[32px] leading-[1.2] tracking-[-0.3px] mt-4"
+                      style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: "clamp(22px,2.5vw,32px)",
+                        fontWeight: 700,
+                        color: "#0D1117",
+                        lineHeight: 1.2,
+                        letterSpacing: "-0.3px",
+                        marginTop: "8px",
+                      }}
                     >
                       {block.text}
                     </h2>
                   );
-                }
-
-                if (block.type === "quote") {
+                if (block.type === "quote")
                   return (
                     <blockquote
                       key={i}
-                      className="border-l-[3px] border-[#E8E0D0] pl-7 py-2 my-4"
+                      style={{
+                        borderLeft: `3px solid ${color}`,
+                        paddingLeft: "24px",
+                        paddingTop: "8px",
+                        paddingBottom: "8px",
+                        margin: "8px 0",
+                        background: `${color}06`,
+                        borderRadius: "0 8px 8px 0",
+                      }}
                     >
-                      <p className="font-display italic font-normal text-[20px] leading-[1.65] text-[#E8E0D0]">
+                      <p
+                        style={{
+                          fontFamily: "'Cormorant Garamond', serif",
+                          fontStyle: "italic",
+                          fontSize: "clamp(17px,2vw,20px)",
+                          lineHeight: 1.65,
+                          color: color,
+                          margin: 0,
+                        }}
+                      >
                         "{block.text}"
                       </p>
                     </blockquote>
                   );
-                }
-
-                if (block.type === "image") {
-                  return (
-                    <div
-                      key={i}
-                      className="w-full h-[280px] bg-[#161616] border border-white/[0.07] flex items-center justify-center my-4 rounded-sm overflow-hidden"
-                    >
-                      {block.src ? (
-                        <img
-                          src={block.src}
-                          alt={block.alt || ""}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="font-body font-light text-[13px] text-[#2A2A2A] uppercase tracking-widest">
-                          Image placeholder
-                        </span>
-                      )}
-                    </div>
-                  );
-                }
-
                 return null;
               })}
             </div>
           </article>
 
           {/* Sidebar */}
-          <aside className="hidden lg:flex flex-col gap-6 sticky top-[100px]">
+          <aside
+            style={{
+              position: "sticky",
+              top: "100px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "14px",
+            }}
+          >
             {/* Share */}
-            <div className="bg-[#161616] border border-white/[0.07] p-6">
-              <h5 className="font-condensed font-bold uppercase text-[9px] tracking-[3px] text-[#9A9A9A] mb-5">
+            <div
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid #E5E7EB",
+                borderRadius: "14px",
+                padding: "22px",
+                borderTop: `3px solid ${color}`,
+              }}
+            >
+              <h5
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "9px",
+                  fontWeight: 700,
+                  letterSpacing: "3px",
+                  textTransform: "uppercase",
+                  color: "#9CA3AF",
+                  marginBottom: "14px",
+                }}
+              >
                 Share This Post
               </h5>
-              <div className="flex flex-col gap-2">
-                {[
-                  { label: "Share on 𝕏", href: "#" },
-                  { label: "Share on LinkedIn", href: "#" },
-                  { label: "Copy Link", href: "#" },
-                ].map((s) => (
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
+                {["Share on 𝕏", "Share on LinkedIn", "Copy Link"].map((s) => (
                   <a
-                    key={s.label}
-                    href={s.href}
-                    className="
-                      font-condensed font-semibold uppercase text-[9px] tracking-[2px]
-                      text-[#9A9A9A] border border-[#2A2A2A] px-4 py-3
-                      hover:border-[#9A9A9A] hover:text-[#C8C8C8]
-                      transition-all duration-200 no-underline text-center rounded-sm
-                    "
+                    key={s}
+                    href="#"
+                    style={{
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      fontSize: "9px",
+                      fontWeight: 600,
+                      letterSpacing: "2px",
+                      textTransform: "uppercase",
+                      color: "#6B7280",
+                      border: "1px solid #E5E7EB",
+                      padding: "10px 14px",
+                      borderRadius: "6px",
+                      textAlign: "center",
+                      textDecoration: "none",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = color;
+                      e.currentTarget.style.color = color;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "#E5E7EB";
+                      e.currentTarget.style.color = "#6B7280";
+                    }}
                   >
-                    {s.label}
+                    {s}
                   </a>
                 ))}
               </div>
             </div>
 
-            {/* About the org */}
-            <div className="bg-[#161616] border border-white/[0.07] p-6">
-              <h5 className="font-condensed font-bold uppercase text-[9px] tracking-[3px] text-[#9A9A9A] mb-4">
+            {/* About */}
+            <div
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid #E5E7EB",
+                borderRadius: "14px",
+                padding: "22px",
+              }}
+            >
+              <h5
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "9px",
+                  fontWeight: 700,
+                  letterSpacing: "3px",
+                  textTransform: "uppercase",
+                  color: "#9CA3AF",
+                  marginBottom: "10px",
+                }}
+              >
                 About Flux Aid
               </h5>
-              <p className="font-body font-light text-[12px] leading-[1.8] text-[#9A9A9A] mb-5">
-                Flux Aid Initiative is a non-governmental organisation dedicated
-                to advocacy, empowerment, and the upliftment of vulnerable
-                communities across Nigeria and Africa.
+              <p
+                style={{
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: "12px",
+                  fontWeight: 300,
+                  lineHeight: 1.8,
+                  color: "#6B7280",
+                  marginBottom: "14px",
+                }}
+              >
+                Non-governmental organisation dedicated to advocacy,
+                empowerment, and upliftment of vulnerable communities across
+                Nigeria and Africa.
               </p>
-              <Button
+              <a
                 href="/about"
-                variant="ghost"
-                className="w-full justify-center text-[9px] py-3"
+                style={{
+                  display: "block",
+                  textAlign: "center",
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "9px",
+                  fontWeight: 700,
+                  letterSpacing: "2px",
+                  textTransform: "uppercase",
+                  color: "#6C609E",
+                  border: "1px solid rgba(108,96,158,0.3)",
+                  borderRadius: "6px",
+                  padding: "10px",
+                  textDecoration: "none",
+                }}
               >
                 Learn More
-              </Button>
+              </a>
             </div>
 
-            {/* Donate nudge */}
-            <div className="bg-[#1E1E1E] border border-white/[0.07] p-6">
-              <h5 className="font-condensed font-bold uppercase text-[9px] tracking-[3px] text-[#9A9A9A] mb-3">
+            {/* Donate */}
+            <div
+              style={{
+                background: "#0F1E35",
+                borderRadius: "14px",
+                padding: "22px",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  right: "-20px",
+                  width: "100px",
+                  height: "100px",
+                  background:
+                    "radial-gradient(circle, rgba(47,138,201,0.2) 0%, transparent 70%)",
+                  borderRadius: "50%",
+                  pointerEvents: "none",
+                }}
+              />
+              <h5
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "9px",
+                  fontWeight: 700,
+                  letterSpacing: "3px",
+                  textTransform: "uppercase",
+                  color: "rgba(200,214,232,0.5)",
+                  marginBottom: "8px",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
                 Support Our Work
               </h5>
-              <p className="font-body font-light text-[12px] leading-[1.7] text-[#9A9A9A] mb-5">
-                Every gift goes directly to the communities we serve.
+              <p
+                style={{
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: "12px",
+                  fontWeight: 300,
+                  lineHeight: 1.7,
+                  color: "rgba(200,214,232,0.5)",
+                  marginBottom: "14px",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
+                Every gift goes directly to communities we serve.
               </p>
-              <Button
+              <a
                 href="/donate"
-                variant="primary"
-                className="w-full justify-center"
+                style={{
+                  display: "block",
+                  textAlign: "center",
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "9px",
+                  fontWeight: 700,
+                  letterSpacing: "2px",
+                  textTransform: "uppercase",
+                  color: "white",
+                  background: "#2F8AC9",
+                  borderRadius: "6px",
+                  padding: "12px",
+                  textDecoration: "none",
+                  position: "relative",
+                  zIndex: 1,
+                }}
               >
                 Donate Now
-              </Button>
+              </a>
             </div>
           </aside>
         </div>
       </section>
 
-      {/* ── RELATED POSTS ────────────────────── */}
-      {post.related && post.related.length > 0 && (
-        <section className="px-4 lg:px-16 py-16 lg:py-20 border-b border-white/[0.07]">
-          <div className="flex items-center gap-3 mb-8">
-            <span className="w-[5px] h-[5px] rounded-full bg-[#9A9A9A]" />
-            <span className="font-condensed font-semibold uppercase text-[10px] tracking-[3.5px] text-[#9A9A9A]">
-              Related Posts
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-[1px] bg-white/[0.07] border border-white/[0.07]">
-            {post.related.map((rel) => (
-              <a
-                key={rel.slug}
-                href={`/blog/${rel.slug}`}
-                className="
-                  bg-[#161616] p-8 flex flex-col gap-4
-                  no-underline group
-                  hover:bg-[#1E1E1E] transition-colors duration-200
-                "
+      {/* ── RELATED ──────────────────────────── */}
+      {post.related?.length > 0 && (
+        <section
+          style={{
+            padding: "clamp(32px,5vw,64px) clamp(20px,5vw,80px)",
+            borderTop: "1px solid #E5E7EB",
+          }}
+        >
+          <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                marginBottom: "28px",
+              }}
+            >
+              <span
+                style={{
+                  width: "5px",
+                  height: "5px",
+                  borderRadius: "50%",
+                  background: "#6C609E",
+                  display: "inline-block",
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "10px",
+                  fontWeight: 600,
+                  letterSpacing: "3.5px",
+                  textTransform: "uppercase",
+                  color: "#6C609E",
+                }}
               >
-                <Chip label={rel.category} />
-                <h3 className="font-display font-bold text-[#F5F5F5] text-[20px] lg:text-[24px] leading-[1.3] tracking-[-0.2px] group-hover:text-[#E8E0D0] transition-colors duration-200">
-                  {rel.title}
-                </h3>
-                <span className="font-condensed font-semibold uppercase text-[10px] tracking-[2px] text-[#9A9A9A] group-hover:text-[#F5F5F5] transition-colors duration-200 mt-auto">
-                  Read →
-                </span>
-              </a>
-            ))}
+                Related Posts
+              </span>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: "14px",
+              }}
+            >
+              {post.related.map((rel, i) => {
+                const relColor = CAT_COLOR[rel.category] || "#2F8AC9";
+                const relDark = i % 2 === 1;
+                return (
+                  <a
+                    key={rel.slug}
+                    href={`/blog/${rel.slug}`}
+                    style={{
+                      background: relDark ? "#0F1E35" : "#FFFFFF",
+                      border: "1px solid",
+                      borderColor: relDark ? "transparent" : "#E5E7EB",
+                      borderRadius: "14px",
+                      padding: "24px 26px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "12px",
+                      textDecoration: "none",
+                      position: "relative",
+                      overflow: "hidden",
+                      boxShadow: relDark
+                        ? "0 8px 32px rgba(0,0,0,0.15)"
+                        : "0 2px 10px rgba(0,0,0,0.04)",
+                      transition: "transform 0.22s",
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.transform = "translateY(-3px)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.transform = "translateY(0)")
+                    }
+                  >
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: "3px",
+                        background: `linear-gradient(90deg, ${relColor}, ${relColor === "#2F8AC9" ? "#6C609E" : "#2F8AC9"})`,
+                        borderRadius: "14px 14px 0 0",
+                      }}
+                    />
+                    <span
+                      style={{
+                        display: "inline-block",
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontSize: "9px",
+                        fontWeight: 700,
+                        letterSpacing: "2px",
+                        textTransform: "uppercase",
+                        color: relColor,
+                        background: `${relColor}15`,
+                        border: `1px solid ${relColor}30`,
+                        padding: "4px 10px",
+                        borderRadius: "4px",
+                        alignSelf: "flex-start",
+                      }}
+                    >
+                      {rel.category}
+                    </span>
+                    <h3
+                      style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: "clamp(18px,2vw,22px)",
+                        fontWeight: 700,
+                        color: relDark ? "#F0F6FF" : "#0D1117",
+                        lineHeight: 1.3,
+                        margin: 0,
+                        position: "relative",
+                        zIndex: 1,
+                      }}
+                    >
+                      {rel.title}
+                    </h3>
+                    <span
+                      style={{
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontSize: "10px",
+                        fontWeight: 700,
+                        letterSpacing: "2px",
+                        textTransform: "uppercase",
+                        color: relColor,
+                        position: "relative",
+                        zIndex: 1,
+                      }}
+                    >
+                      Read →
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
           </div>
         </section>
       )}
 
-      {/* ── CTA ──────────────────────────────── */}
-      <section className="px-4 lg:px-16 py-16 bg-[#0F0F0F]">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+      {/* ── BOTTOM CTA ───────────────────────── */}
+      <section
+        style={{
+          background: "#6C609E",
+          padding: "clamp(40px,5vw,64px) clamp(20px,5vw,80px)",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "24px",
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
           <div>
-            <h3 className="font-display font-bold text-[#F5F5F5] text-[32px] lg:text-[40px] leading-[1.1] tracking-[-0.5px] mb-3">
+            <h3
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(26px,4vw,40px)",
+                fontWeight: 700,
+                color: "#FFFFFF",
+                lineHeight: 1.1,
+                marginBottom: "8px",
+              }}
+            >
               Enjoyed this{" "}
-              <em className="italic font-normal text-[#E8E0D0]">read?</em>
+              <em
+                style={{
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  color: "rgba(255,255,255,0.7)",
+                }}
+              >
+                read?
+              </em>
             </h3>
-            <p className="font-body font-light text-[14px] text-[#9A9A9A]">
+            <p
+              style={{
+                fontFamily: "'Barlow', sans-serif",
+                fontSize: "14px",
+                fontWeight: 300,
+                color: "rgba(255,255,255,0.65)",
+                margin: 0,
+              }}
+            >
               Support our work or explore more stories from the field.
             </p>
           </div>
-          <div className="flex items-center gap-4 flex-shrink-0">
-            <Button href="/donate" variant="primary">
+          <div style={{ display: "flex", gap: "12px" }}>
+            <a
+              href="/donate"
+              style={{
+                background: "#FFFFFF",
+                color: "#6C609E",
+                textDecoration: "none",
+                padding: "13px 26px",
+                borderRadius: "4px",
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+              }}
+            >
               Donate Now
-            </Button>
-            <Button href="/blog" variant="ghost">
+            </a>
+            <a
+              href="/blog"
+              style={{
+                background: "transparent",
+                color: "rgba(255,255,255,0.8)",
+                textDecoration: "none",
+                padding: "12px 22px",
+                borderRadius: "4px",
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "11px",
+                fontWeight: 600,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                border: "1px solid rgba(255,255,255,0.3)",
+              }}
+            >
               More Posts
-            </Button>
+            </a>
           </div>
         </div>
       </section>

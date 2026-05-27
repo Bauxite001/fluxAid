@@ -1,6 +1,5 @@
 // Hero.jsx
 
-import { KEY_QUOTE } from "../constants";
 import Button from "./Button";
 
 const STATS = [
@@ -36,21 +35,21 @@ const Hero = () => {
 
         {/* Glow blobs */}
         <div
-          className="absolute top-[-120px] left-[-80px] w-[500px] h-[500px] rounded-full pointer-events-none"
+          className="absolute top-[-120px] left-[-80px] w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] rounded-full pointer-events-none"
           style={{
             background:
               "radial-gradient(circle, rgba(108,96,158,0.25) 0%, transparent 65%)",
           }}
         />
         <div
-          className="absolute bottom-[-100px] right-[300px] w-[400px] h-[400px] rounded-full pointer-events-none"
+          className="absolute bottom-[-100px] right-[10%] lg:right-[300px] w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] rounded-full pointer-events-none"
           style={{
             background:
               "radial-gradient(circle, rgba(47,138,201,0.18) 0%, transparent 65%)",
           }}
         />
         <div
-          className="absolute top-1/2 right-[100px] -translate-y-1/2 w-[300px] h-[300px] rounded-full pointer-events-none"
+          className="absolute top-1/2 right-[100px] -translate-y-1/2 w-[300px] h-[300px] rounded-full pointer-events-none hidden lg:block"
           style={{
             background:
               "radial-gradient(circle, rgba(108,96,158,0.12) 0%, transparent 65%)",
@@ -59,7 +58,7 @@ const Hero = () => {
 
         {/* Africa SVG watermark */}
         <svg
-          className="absolute top-1/2 right-[60px] -translate-y-1/2 w-[380px] opacity-[0.05] pointer-events-none"
+          className="absolute bottom-10 right-4 lg:top-1/2 lg:right-[60px] lg:-translate-y-1/2 w-[200px] sm:w-[280px] lg:w-[380px] opacity-[0.03] lg:opacity-[0.05] pointer-events-none"
           viewBox="0 0 400 500"
           fill="white"
           xmlns="http://www.w3.org/2000/svg"
@@ -68,19 +67,19 @@ const Hero = () => {
         </svg>
 
         {/* ── LEFT — content ─────────────────── */}
-        <div className="relative z-10 px-10 lg:px-20 py-24 pb-32">
+        <div className="relative z-10 px-6 sm:px-10 lg:px-20 py-16 sm:py-24 lg:pb-32">
           {/* Eyebrow */}
-          <div className="flex items-center gap-3 mb-9">
+          <div className="flex items-center gap-3 mb-6 sm:mb-9">
             <span className="w-2 h-2 rounded-full bg-[#2F8AC9]" />
-            <span className="font-condensed font-semibold uppercase text-[11px] tracking-[4px] text-[#2F8AC9]">
+            <span className="font-condensed font-semibold uppercase text-[10px] sm:text-[11px] tracking-[3px] sm:tracking-[4px] text-[#2F8AC9]">
               On the Ground · Every Day · Africa
             </span>
           </div>
 
           {/* H1 */}
           <h1
-            className="font-display font-bold leading-[0.88] tracking-[-3px] mb-8"
-            style={{ fontSize: "clamp(72px, 8vw, 110px)" }}
+            className="font-display font-bold leading-[0.9] lg:leading-[0.88] tracking-[-1.5px] sm:tracking-[-3px] mb-6 sm:mb-8"
+            style={{ fontSize: "clamp(46px, 10vw, 110px)" }}
           >
             <span className="block text-[#F0F6FF]">We</span>
             <span className="block italic font-bold text-[#2F8AC9]">
@@ -93,39 +92,39 @@ const Hero = () => {
           </h1>
 
           {/* Sub */}
-          <p className="font-body font-light text-[16px] leading-[1.85] text-[rgba(200,214,232,0.55)] max-w-[480px] mb-11">
+          <p className="font-body font-light text-[15px] sm:text-[16px] leading-[1.75] sm:leading-[1.85] text-[rgba(200,214,232,0.55)] max-w-[480px] mb-8 sm:mb-11">
             Empowering communities, amplifying voices, and building futures that
             last — through daily action on the ground across the continent.
           </p>
 
           {/* CTAs */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <button className="bg-[#2F8AC9] text-white font-condensed font-bold uppercase text-[11px] tracking-[2.5px] px-8 py-4 rounded-[4px] border-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:flex-wrap">
+            <button className="bg-[#2F8AC9] text-white font-condensed font-bold uppercase text-[11px] tracking-[2.5px] px-8 py-4 rounded-[4px] border-0 text-center">
               Our Programs
             </button>
-            <button className="bg-[#6C609E] text-white font-condensed font-bold uppercase text-[11px] tracking-[2.5px] px-7 py-4 rounded-[4px] border-0">
+            <button className="bg-[#6C609E] text-white font-condensed font-bold uppercase text-[11px] tracking-[2.5px] px-7 py-4 rounded-[4px] border-0 text-center">
               Our Story
             </button>
-            <button className="bg-transparent text-[rgba(200,214,232,0.7)] font-condensed font-semibold uppercase text-[11px] tracking-[2.5px] px-6 py-[15px] rounded-[4px] border border-[rgba(200,214,232,0.2)]">
+            <button className="bg-transparent text-[rgba(200,214,232,0.7)] font-condensed font-semibold uppercase text-[11px] tracking-[2.5px] px-6 py-[15px] rounded-[4px] border border-[rgba(200,214,232,0.2)] text-center">
               Donate Now
             </button>
           </div>
         </div>
 
         {/* ── RIGHT — stats ──────────────────── */}
-        <div className="relative z-10 hidden lg:flex flex-col justify-center h-full px-10 py-24 pb-32 border-l border-white/[0.06]">
+        <div className="relative z-10 grid grid-cols-2 gap-px bg-white/[0.04] lg:bg-transparent lg:flex flex-col justify-center h-full px-6 sm:px-10 lg:px-20 py-12 lg:py-24 lg:pb-32 border-t lg:border-t-0 lg:border-l border-white/[0.06]">
           {STATS.map((stat, i) => (
             <div
               key={stat.label}
-              className="py-9 border-b border-white/[0.06] first:border-t first:border-white/[0.06]"
+              className="p-4 sm:p-6 lg:p-0 lg:py-9 bg-[#0F1E35] lg:bg-transparent lg:border-b lg:border-white/[0.06] lg:first:border-t lg:first:border-white/[0.06]"
             >
               <div
-                className={`font-display font-bold leading-none mb-2 tracking-[-2px] ${stat.color}`}
-                style={{ fontSize: "clamp(52px, 5vw, 72px)" }}
+                className={`font-display font-bold leading-none mb-2 tracking-[-1px] sm:tracking-[-2px] ${stat.color}`}
+                style={{ fontSize: "clamp(36px, 6vw, 72px)" }}
               >
                 {stat.value}
               </div>
-              <div className="font-condensed font-semibold uppercase text-[11px] tracking-[3px] text-[rgba(200,214,232,0.55)]">
+              <div className="font-condensed font-semibold uppercase text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] text-[rgba(200,214,232,0.55)]">
                 {stat.label}
               </div>
             </div>
