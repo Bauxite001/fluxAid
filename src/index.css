@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── COLOURS ─────────────────────────────── */
+  --color-flux-primary: #2f8ac9;
+  --color-flux-primary-dark: #1e5a99;
+  --color-flux-primary-light: #5ba3e0;
+
+  --color-flux-white: #ffffff;
+  --color-flux-off-white: #f8f9fa;
+  --color-flux-light-gray: #e9ecef;
+  --color-flux-gray: #6c757d;
+  --color-flux-dark-gray: #495057;
+  --color-flux-black: #1a1a1a;
+  --color-flux-silver: silver;
+  --color-flux-card-bg: #f5f7fb;
+  --color-flux-card-border: #e0e7f1;
+  --color-flux-accent: #2f8ac9;
+  --color-flux-accent-dark: #1e5a99;
+  --color-flux-success: #27ae60;
+  --color-flux-warning: #f39c12;
+  --color-flux-error: #e74c3c;
+
+  /* ── FONTS ───────────────────────────────── */
+  --font-display: "Cormorant Garamond", serif;
+  --font-condensed: "Barlow Condensed", sans-serif;
+  --font-body: "Barlow", sans-serif;
+}
+
+/* ── BASE ─────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  background-color: #ffffff;
+  color: #1a1a1a;
+  font-family: "Barlow", sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+/* ── TYPOGRAPHY ───────────────────────────── */
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+  color: #1a1a1a;
+}
+
+h1 {
+  color: #2f8ac9;
+}
+
+a {
+  color: #2f8ac9;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #1e5a99;
+}
+
+/* ── CARD STYLING ─────────────────────────── */
+.card {
+  background: #f5f7fb;
+  border: 1px solid #e0e7f1;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(47, 138, 201, 0.08);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(47, 138, 201, 0.15);
+  border-color: #2f8ac9;
+}
+
+/* ── SCROLLBAR ────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f8f9fa;
+}
+::-webkit-scrollbar-thumb {
+  background: #2f8ac9;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1e5a99;
+}
+
+/* ── SELECTION ────────────────────────────── */
+::selection {
+  background: #2f8ac9;
+  color: #ffffff;
+}
+
+/* ── HORIZONTAL SCROLLBAR HIDE ────────────── */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── GRID TEXTURE UTILITY ─────────────────── */
+.grid-texture {
+  background-image:
+    linear-gradient(rgba(47, 138, 201, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 138, 201, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* ── ACCENT LINE UTILITY ──────────────────── */
+.accent-line-top::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2f8ac9, #5ba3e0);
+}
+
+/* ── DIVIDER/RULE LINE UTILITY ────────────── */
+.rule-line {
+  border-color: rgba(47, 138, 201, 0.1);
+}
+
+/* ── BUTTON STYLES ────────────────────────── */
+.btn-primary {
+  background-color: #2f8ac9;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #1e5a99;
+  box-shadow: 0 4px 12px rgba(47, 138, 201, 0.3);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #2f8ac9;
+  border: 2px solid #2f8ac9;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #2f8ac9;
+  color: white;
+}
