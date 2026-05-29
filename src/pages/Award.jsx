@@ -990,7 +990,7 @@ const Award = () => {
             }}
           >
             The list above reflects officially certified recipients of the{" "}
-            {DANGA || "DANGA"} honors.
+            {DANGA.desc || "DANGA"} honors.
           </p>
         </div>
       </section>

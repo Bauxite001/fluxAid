@@ -141,6 +141,7 @@ export const NAV_LINKS = [
   { label: "Gallery", href: "/gallery" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
+  { label: "Award", href: "/award" },
 ];
 
 // ── FOOTER LINKS ──────────────────────────────
@@ -150,6 +151,7 @@ export const FOOTER_LINKS = {
     { label: "Our Team", href: "/about#team" },
     { label: "Annual Reports", href: "/reports" },
     { label: "Press Kit", href: "/press" },
+    { label: "DANGA Award", href: "/award" },
   ],
   "Get Involved": [
     { label: "Donate", href: "/donate" },

@@ -1,10 +1,12 @@
 // App.jsx
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
 // Pages
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import Home from "./pages/Home";
 import About from "./pages/About";
 // import Daily from "./pages/Daily";
@@ -19,10 +21,13 @@ import Volunteer from "./pages/Volunteer";
 import Contact from "./pages/Contact";
 // import Privacy from "./pages/Privacy";
 
-const App = () => {
+const AppContent = () => {
+  const location = useLocation();
+  const isAdminPage = location.pathname.startsWith("/admin");
+
   return (
-    <BrowserRouter>
-      <Navbar />
+    <>
+      {!isAdminPage && <Navbar />}
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -38,9 +43,19 @@ const App = () => {
           <Route path="/volunteer" element={<Volunteer />} />
           <Route path="/contact" element={<Contact />} />
           {/* <Route path="/privacy" element={<Privacy />} /> */}
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
       </main>
-      <Footer />
+      {!isAdminPage && <Footer />}
+    </>
+  );
+};
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 };
