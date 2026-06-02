@@ -1,115 +1,7 @@
 // pages/Blog.jsx
 
-import { useState } from "react";
-
-const POSTS = [
-  {
-    id: 1,
-    slug: "why-flux-aid-was-founded",
-    category: "About Us",
-    title: "Why Flux Aid Initiative was founded — and what drives us every day",
-    excerpt:
-      "The story behind Flux Aid Initiative — where we came from, what we stand for, and why we believe Africa's transformation must come from within.",
-    author: "Flux Aid Team",
-    initials: "FA",
-    date: "May 7, 2026",
-    readTime: "7 min read",
-    featured: true,
-  },
-  {
-    id: 2,
-    slug: "danga-award-explained",
-    category: "Awards",
-    title: "The DANGA Award — recognising Nigeria's unsung heroes",
-    excerpt:
-      "What is the Distinguished Ambassador of Change National Gold Award, who qualifies, and why it matters for national development.",
-    author: "Flux Aid Team",
-    initials: "FA",
-    date: "May 5, 2026",
-    readTime: "5 min read",
-    featured: false,
-  },
-  {
-    id: 3,
-    slug: "what-african-youth-need",
-    category: "Opinion",
-    title: "What African youth really need from NGOs in 2026",
-    excerpt:
-      "A frank look at what young Africans are asking for — and whether the development sector is truly listening.",
-    author: "Flux Aid Team",
-    initials: "FA",
-    date: "May 3, 2026",
-    readTime: "6 min read",
-    featured: false,
-  },
-  {
-    id: 4,
-    slug: "2025-impact-review",
-    category: "Impact Report",
-    title: "2025 in review — our biggest year, by the numbers",
-    excerpt:
-      "A full breakdown of what Flux Aid achieved in 2025 — the communities we reached, the projects we ran, and what we learned.",
-    author: "Flux Aid Team",
-    initials: "FA",
-    date: "May 1, 2026",
-    readTime: "10 min read",
-    featured: false,
-  },
-  {
-    id: 5,
-    slug: "village-no-electricity",
-    category: "Field Story",
-    title: "A village with no electricity — and what happened next",
-    excerpt:
-      "One of our field correspondents tells the story of a community that had given up on change — and what happened when Flux Aid arrived.",
-    author: "Amaka Osei",
-    initials: "AO",
-    date: "Apr 28, 2026",
-    readTime: "8 min read",
-    featured: false,
-  },
-  {
-    id: 6,
-    slug: "integrity-in-leadership",
-    category: "Opinion",
-    title: "Integrity in leadership — why it still matters more than anything",
-    excerpt:
-      "Hard work and talent are not enough. Without integrity, no leader can truly serve.",
-    author: "Flux Aid Team",
-    initials: "FA",
-    date: "Apr 24, 2026",
-    readTime: "5 min read",
-    featured: false,
-  },
-  {
-    id: 7,
-    slug: "child-rights-workshop-abuja",
-    category: "Field Story",
-    title:
-      "300 parents in Abuja learned their child's rights — here's what changed",
-    excerpt:
-      "A recap of our child rights awareness workshop in Abuja and the conversations that came out of it.",
-    author: "Erhinna Abara",
-    initials: "EA",
-    date: "Apr 20, 2026",
-    readTime: "6 min read",
-    featured: false,
-  },
-  {
-    id: 8,
-    slug: "women-rise-lagos",
-    category: "Field Story",
-    title:
-      "Women Rise Lagos — what happened when 120 women sat in the same room",
-    excerpt:
-      "A full account of our Women Rise leadership forum in Lagos and the stories that emerged.",
-    author: "Amaka Osei",
-    initials: "AO",
-    date: "Apr 17, 2026",
-    readTime: "7 min read",
-    featured: false,
-  },
-];
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 
 const CATEGORIES = [
   "All",
@@ -129,14 +21,28 @@ const CAT_COLOR = {
 };
 
 const Blog = () => {
+  const [posts, setPosts] = useState([]);
   const [activeCategory, setActiveCategory] = useState("All");
+
+  // Fetch blog posts from Supabase
+  useEffect(() => {
+    supabase
+      .from("blog_posts")
+      .select("*")
+      .eq("published", true)
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) console.error(error);
+        else setPosts(data || []);
+      });
+  }, []);
 
   const filtered =
     activeCategory === "All"
-      ? POSTS
-      : POSTS.filter((p) => p.category === activeCategory);
-  const featured = POSTS.find((p) => p.featured);
-  const rest = filtered.filter((p) => !p.featured || activeCategory !== "All");
+      ? posts
+      : posts.filter((p) => p.category === activeCategory);
+  const featured = posts.find((_, i) => i === 0);
+  const rest = filtered.filter((_, i) => i !== 0 || activeCategory !== "All");
   const showFeatured = activeCategory === "All" && featured;
 
   return (

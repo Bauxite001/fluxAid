@@ -1,33 +1,53 @@
 // DailyActivity.jsx
 
-import { useState } from "react";
-import SectionHeader from "./SectionHeader";
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 
-// ── ADMIN POSTS THIS DAILY ─────────────────────
-// Replace this object with your CMS/API data
-const TODAY_POST = {
-  date: "Thursday, May 22, 2026",
-  tag: "World Malaria Day",
+// ── FALLBACK POST ─────────────────────
+const FALLBACK_POST = {
+  date: "Check back soon",
+  tag: "Update",
   tagColor: "#2F8AC9",
-  title: "Flux Aid Initiative Marks World Malaria Day 2026",
-  coverEmoji: "🦟", // replace with real image src
-  coverImage: null, // e.g. "/images/daily/malaria-day.jpg"
+  title: "Today's activity will appear here",
+  coverEmoji: "🌍",
+  coverImage: null,
   body: [
-    "Today, on World Malaria Day, Flux Aid Initiative stands with communities across Africa in the fight against one of the continent's most persistent and deadly diseases. Malaria claims hundreds of thousands of lives every year — the majority of them children under the age of five.",
-    "This year, our teams across Nigeria, Kenya, and Senegal are on the ground distributing insecticide-treated bed nets, conducting free malaria testing, and running community education sessions on prevention and early treatment.",
-    "We believe that malaria is not just a health issue — it is a poverty issue, an equity issue, and a governance issue. Ending malaria requires sustained political will, community action, and organisations willing to show up every day.",
-    "Today we show up. And tomorrow we will too.",
+    "Our team is on the ground today. Check back later for a full update.",
   ],
+  highlight: "",
   author: "Flux Aid Initiative",
-  authorRole: "Field Communications Team",
-  location: "Abuja, Nigeria",
-  highlight: "Free testing · Bed net distribution · Community education",
+  authorRole: "Field Team",
+  location: "Nigeria & Africa",
+  time: "",
 };
 
 const DailyActivity = () => {
+  const [post, setPost] = useState(FALLBACK_POST);
   const [expanded, setExpanded] = useState(false);
 
-  const post = TODAY_POST;
+  // Fetch latest published daily post from Supabase
+  useEffect(() => {
+    supabase
+      .from("daily_posts")
+      .select("*")
+      .eq("published", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setPost({
+            ...data,
+            // map database column names to what your component expects
+            tagColor: data.tag_color,
+            coverEmoji: data.cover_emoji,
+            coverImage: data.media_url,
+            authorRole: data.author_role,
+          });
+        }
+      });
+  }, []);
+
   const previewBody = post.body.slice(0, 2);
   const fullBody = post.body;
 

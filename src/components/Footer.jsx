@@ -124,46 +124,224 @@ const Footer = () => {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "8px",
+                gap: "10px",
               }}
             >
-              <a
-                href={`mailto:${CONTACT.email1}`}
-                style={{
-                  fontFamily: "'Barlow', sans-serif",
-                  fontSize: "12px",
-                  fontWeight: 300,
-                  color: "rgba(255,255,255,0.65)",
-                  textDecoration: "none",
-                  transition: "color 0.2s",
-                }}
-              >
-                {CONTACT.email1}
-              </a>
-              <a
-                href={`tel:${CONTACT.phone1}`}
-                style={{
-                  fontFamily: "'Barlow', sans-serif",
-                  fontSize: "12px",
-                  fontWeight: 300,
-                  color: "rgba(255,255,255,0.65)",
-                  textDecoration: "none",
-                }}
-              >
-                {CONTACT.phone1}
-              </a>
-              <p
-                style={{
-                  fontFamily: "'Barlow', sans-serif",
-                  fontSize: "12px",
-                  fontWeight: 300,
-                  color: "rgba(255,255,255,0.5)",
-                  lineHeight: 1.6,
-                  margin: 0,
-                }}
-              >
-                {CONTACT.abuja}
-              </p>
+              {/* Emails */}
+              <div>
+                <p
+                  style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: "9px",
+                    fontWeight: 600,
+                    letterSpacing: "1.5px",
+                    textTransform: "uppercase",
+                    color: "rgba(255,255,255,0.4)",
+                    margin: "0 0 6px 0",
+                  }}
+                >
+                  Email
+                </p>
+                <a
+                  href={`mailto:${CONTACT.email1}`}
+                  style={{
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: "12px",
+                    fontWeight: 300,
+                    color: "rgba(255,255,255,0.65)",
+                    textDecoration: "none",
+                    transition: "color 0.2s",
+                    display: "block",
+                    marginBottom: "4px",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = "rgba(255,255,255,0.9)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = "rgba(255,255,255,0.65)")
+                  }
+                >
+                  {CONTACT.email1}
+                </a>
+                {CONTACT.email2 && (
+                  <a
+                    href={`mailto:${CONTACT.email2}`}
+                    style={{
+                      fontFamily: "'Barlow', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 300,
+                      color: "rgba(255,255,255,0.65)",
+                      textDecoration: "none",
+                      transition: "color 0.2s",
+                      display: "block",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.color = "rgba(255,255,255,0.9)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.color = "rgba(255,255,255,0.65)")
+                    }
+                  >
+                    {CONTACT.email2}
+                  </a>
+                )}
+              </div>
+
+              {/* Phone numbers */}
+              <div>
+                <p
+                  style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: "9px",
+                    fontWeight: 600,
+                    letterSpacing: "1.5px",
+                    textTransform: "uppercase",
+                    color: "rgba(255,255,255,0.4)",
+                    margin: "0 0 6px 0",
+                  }}
+                >
+                  Phone
+                </p>
+                <a
+                  href={`tel:${CONTACT.phone1}`}
+                  style={{
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: "12px",
+                    fontWeight: 300,
+                    color: "rgba(255,255,255,0.65)",
+                    textDecoration: "none",
+                    transition: "color 0.2s",
+                    display: "block",
+                    marginBottom: "4px",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = "rgba(255,255,255,0.9)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = "rgba(255,255,255,0.65)")
+                  }
+                >
+                  {CONTACT.phone1}
+                </a>
+                {CONTACT.phone2 && (
+                  <a
+                    href={`tel:${CONTACT.phone2}`}
+                    style={{
+                      fontFamily: "'Barlow', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 300,
+                      color: "rgba(255,255,255,0.65)",
+                      textDecoration: "none",
+                      transition: "color 0.2s",
+                      display: "block",
+                      marginBottom: "4px",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.color = "rgba(255,255,255,0.9)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.color = "rgba(255,255,255,0.65)")
+                    }
+                  >
+                    {CONTACT.phone2}
+                  </a>
+                )}
+                {CONTACT.phone3 && (
+                  <a
+                    href={`tel:${CONTACT.phone3}`}
+                    style={{
+                      fontFamily: "'Barlow', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 300,
+                      color: "rgba(255,255,255,0.65)",
+                      textDecoration: "none",
+                      transition: "color 0.2s",
+                      display: "block",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.color = "rgba(255,255,255,0.9)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.color = "rgba(255,255,255,0.65)")
+                    }
+                  >
+                    {CONTACT.phone3}
+                  </a>
+                )}
+              </div>
+
+              {/* Locations */}
+              <div>
+                <p
+                  style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: "9px",
+                    fontWeight: 600,
+                    letterSpacing: "1.5px",
+                    textTransform: "uppercase",
+                    color: "rgba(255,255,255,0.4)",
+                    margin: "0 0 6px 0",
+                  }}
+                >
+                  Locations
+                </p>
+                <p
+                  style={{
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: "12px",
+                    fontWeight: 300,
+                    color: "rgba(255,255,255,0.65)",
+                    lineHeight: 1.5,
+                    margin: "0 0 8px 0",
+                  }}
+                >
+                  {CONTACT.abuja}
+                </p>
+                {CONTACT.lagos && (
+                  <p
+                    style={{
+                      fontFamily: "'Barlow', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 300,
+                      color: "rgba(255,255,255,0.65)",
+                      lineHeight: 1.5,
+                      margin: 0,
+                    }}
+                  >
+                    {CONTACT.lagos}
+                  </p>
+                )}
+              </div>
+
+              {/* Website & Social */}
+              <div>
+                {CONTACT.website && (
+                  <p
+                    style={{
+                      fontFamily: "'Barlow', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 300,
+                      color: "rgba(255,255,255,0.65)",
+                      margin: "0 0 6px 0",
+                    }}
+                  >
+                    🌐 {CONTACT.website}
+                  </p>
+                )}
+                {CONTACT.social && (
+                  <p
+                    style={{
+                      fontFamily: "'Barlow', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 300,
+                      color: "rgba(255,255,255,0.65)",
+                      margin: 0,
+                    }}
+                  >
+                    📱 {CONTACT.social}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 

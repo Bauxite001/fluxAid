@@ -1,25 +1,92 @@
+// Quote.jsx — small style fix, no database needed
+
 import { KEY_QUOTE } from "../constants";
 
 function Quote() {
   return (
     <div
-      className=" flex items-center gap-5 px-6 lg:px-20 border-t border-[rgba(47,138,201,0.15)]"
       style={{
-        background: "rgba(0,0,0)",
-        backdropFilter: "blur(10px)",
-        paddingTop: "14px",
-        paddingBottom: "14px",
+        display: "flex",
+        alignItems: "center",
+        gap: "20px",
+        padding: "18px clamp(20px, 5vw, 80px)",
+        background: "#0F1E35",
+        borderTop: "1px solid rgba(47,138,201,0.15)",
+        borderBottom: "1px solid rgba(47,138,201,0.1)",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <span className="w-10 h-px bg-[#2F8AC9] flex-shrink-0" />
+      {/* Subtle glow */}
+      <div
+        style={{
+          position: "absolute",
+          top: "-40px",
+          right: "-40px",
+          width: "180px",
+          height: "180px",
+          background:
+            "radial-gradient(circle, rgba(108,96,158,0.15) 0%, transparent 70%)",
+          borderRadius: "50%",
+          pointerEvents: "none",
+        }}
+      />
 
-      <p className="font-display italic text-[16px] lg:text-[15px] leading-[1.5] text-[rgb(255,254,255)] flex-1">
+      {/* Blue line */}
+      <span
+        style={{
+          width: "40px",
+          height: "1px",
+          background: "#2F8AC9",
+          flexShrink: 0,
+        }}
+      />
+
+      {/* Quote text */}
+      <p
+        style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontStyle: "italic",
+          fontSize: "clamp(14px, 1.8vw, 16px)",
+          lineHeight: 1.6,
+          color: "rgba(200,214,232,0.75)",
+          flex: 1,
+          margin: 0,
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
         {KEY_QUOTE}
       </p>
 
-      <span className="hidden lg:block font-condensed font-bold uppercase text-[9px] tracking-[2.5px] text-[#2F8AC9] border border-[rgba(47,138,201,0.3)] px-4 py-[6px] rounded-sm flex-shrink-0">
+      {/* Badge */}
+      <span
+        style={{
+          display: "none",
+          fontFamily: "'Barlow Condensed', sans-serif",
+          fontWeight: 700,
+          fontSize: "9px",
+          letterSpacing: "2.5px",
+          textTransform: "uppercase",
+          color: "#2F8AC9",
+          border: "1px solid rgba(47,138,201,0.3)",
+          padding: "6px 14px",
+          borderRadius: "3px",
+          flexShrink: 0,
+          whiteSpace: "nowrap",
+          position: "relative",
+          zIndex: 1,
+        }}
+        className="lg:!inline-block"
+      >
         Flux Aid Initiative
       </span>
+
+      <style>{`
+        @media (min-width: 1024px) {
+          .lg\\:!inline-block { display: inline-block !important; }
+        }
+      `}</style>
     </div>
   );
 }

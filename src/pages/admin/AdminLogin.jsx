@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../lib/supabase";
 
 // ── CREDENTIALS — change these or move to env vars ──
 const ADMIN_EMAIL = "admin@fluxaid.org";
@@ -14,20 +15,22 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    setTimeout(() => {
-      if (form.email === ADMIN_EMAIL && form.password === ADMIN_PASSWORD) {
-        sessionStorage.setItem("fluxaid_admin", "true");
-        navigate("/admin/dashboard");
-      } else {
-        setError("Incorrect email or password. Please try again.");
-        setLoading(false);
-      }
-    }, 700);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: form.email,
+      password: form.password,
+    });
+
+    if (error) {
+      setError("Incorrect email or password.");
+      setLoading(false);
+    } else {
+      navigate("/admin/dashboard");
+    }
   };
 
   const inp = {

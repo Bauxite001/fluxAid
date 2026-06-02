@@ -1,7 +1,502 @@
 // pages/admin/AdminDashboard.jsx
-
+import { supabase } from "../../lib/supabase";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+// ── PUBLISHED MANAGER ─────────────────────────────────────────────────
+// Fetches LIVE data from Supabase so admin can delete anything,
+// even items published from a previous session
+
+const TABLE_CONFIG = [
+  {
+    id: "daily_posts",
+    label: "Daily Posts",
+    icon: "📍",
+    titleField: "title",
+    dateField: "created_at",
+  },
+  {
+    id: "blog_posts",
+    label: "Blog Posts",
+    icon: "📝",
+    titleField: "title",
+    dateField: "created_at",
+  },
+  {
+    id: "projects",
+    label: "Projects",
+    icon: "📋",
+    titleField: "title",
+    dateField: "created_at",
+  },
+  {
+    id: "programs",
+    label: "Programs",
+    icon: "🤝",
+    titleField: "title",
+    dateField: "created_at",
+  },
+  {
+    id: "gallery_items",
+    label: "Gallery",
+    icon: "🖼️",
+    titleField: "alt",
+    dateField: "created_at",
+  },
+];
+
+const PublishedManager = () => {
+  const [activeTable, setActiveTable] = useState("daily_posts");
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(null);
+
+  const config = TABLE_CONFIG.find((t) => t.id === activeTable);
+
+  // Fetch whenever table changes
+  useEffect(() => {
+    fetchItems();
+  }, [activeTable]);
+
+  const fetchItems = async () => {
+    setLoading(true);
+    setItems([]);
+
+    const { data, error } = await supabase
+      .from(activeTable)
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      alert("Error fetching items: " + error.message);
+    } else {
+      setItems(data || []);
+    }
+    setLoading(false);
+  };
+
+  const handleDelete = async (item) => {
+    const title = item[config.titleField] || "(No title)";
+    if (
+      !window.confirm(
+        `Delete "${title}"?\n\nThis removes it from the live website immediately.`,
+      )
+    )
+      return;
+
+    setDeleting(item.id);
+
+    try {
+      // 1. If it has a media URL, delete the file from storage too
+      const mediaUrl = item.media_url || item.cover_url;
+      if (mediaUrl && mediaUrl.includes("supabase")) {
+        // Extract the file path from the URL
+        const urlParts = mediaUrl.split("/media/");
+        if (urlParts.length > 1) {
+          await supabase.storage.from("media").remove([urlParts[1]]);
+        }
+      }
+
+      // 2. Delete the database record
+      const { error } = await supabase
+        .from(activeTable)
+        .delete()
+        .eq("id", item.id);
+
+      if (error) {
+        alert("Error deleting: " + error.message);
+        setDeleting(null);
+        return;
+      }
+
+      // 3. Remove from local state
+      setItems((prev) => prev.filter((i) => i.id !== item.id));
+      alert(`✅ "${title}" deleted from the live site.`);
+    } catch (err) {
+      alert("Something went wrong: " + err.message);
+    }
+
+    setDeleting(null);
+  };
+
+  const handleTogglePublished = async (item) => {
+    const newVal = !item.published;
+
+    const { error } = await supabase
+      .from(activeTable)
+      .update({ published: newVal })
+      .eq("id", item.id);
+
+    if (error) {
+      alert("Error updating: " + error.message);
+      return;
+    }
+
+    setItems((prev) =>
+      prev.map((i) => (i.id === item.id ? { ...i, published: newVal } : i)),
+    );
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      {/* Header */}
+      <div
+        style={{
+          background: "#FFFFFF",
+          border: "1px solid #E5E7EB",
+          borderRadius: "16px",
+          padding: "24px 28px",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "3px",
+            background: "linear-gradient(90deg, #2F8AC9, #6C609E)",
+            borderRadius: "16px 16px 0 0",
+          }}
+        />
+        <h2
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: "24px",
+            fontWeight: 700,
+            color: "#0D1117",
+            marginBottom: "4px",
+          }}
+        >
+          Published Content
+        </h2>
+        <p
+          style={{
+            fontFamily: "'Barlow', sans-serif",
+            fontSize: "13px",
+            fontWeight: 300,
+            color: "#9CA3AF",
+            margin: "0 0 20px",
+          }}
+        >
+          Everything currently live on your website. Delete or unpublish
+          anything here.
+        </p>
+
+        {/* Table picker */}
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          {TABLE_CONFIG.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setActiveTable(t.id)}
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "10px",
+                fontWeight: 700,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                padding: "8px 16px",
+                borderRadius: "20px",
+                border: "1.5px solid",
+                borderColor: activeTable === t.id ? "#2F8AC9" : "#E5E7EB",
+                background: activeTable === t.id ? "#2F8AC9" : "#FFFFFF",
+                color: activeTable === t.id ? "#FFFFFF" : "#6B7280",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+            >
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Items list */}
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "48px" }}>
+          <p
+            style={{
+              fontFamily: "'Barlow', sans-serif",
+              fontSize: "14px",
+              color: "#9CA3AF",
+            }}
+          >
+            Loading {config.label.toLowerCase()}...
+          </p>
+        </div>
+      ) : items.length === 0 ? (
+        <div
+          style={{
+            background: "#FFFFFF",
+            border: "1px solid #E5E7EB",
+            borderRadius: "16px",
+            padding: "60px",
+            textAlign: "center",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "40px",
+              opacity: 0.2,
+              display: "block",
+              marginBottom: "14px",
+            }}
+          >
+            📭
+          </span>
+          <p
+            style={{
+              fontFamily: "'Barlow', sans-serif",
+              fontSize: "14px",
+              fontWeight: 300,
+              color: "#9CA3AF",
+            }}
+          >
+            No {config.label.toLowerCase()} published yet.
+          </p>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          {/* Count */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "4px",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "10px",
+                fontWeight: 600,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                color: "#9CA3AF",
+              }}
+            >
+              {items.length} item{items.length !== 1 ? "s" : ""} ·{" "}
+              {items.filter((i) => i.published).length} published
+            </span>
+            <button
+              onClick={fetchItems}
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "9px",
+                fontWeight: 700,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                color: "#2F8AC9",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              ↻ Refresh
+            </button>
+          </div>
+
+          {items.map((item) => {
+            const title = item[config.titleField] || "(No title)";
+            const mediaUrl = item.media_url || item.cover_url;
+            const date = new Date(item.created_at).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            });
+            const isDeleting = deleting === item.id;
+
+            return (
+              <div
+                key={item.id}
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid #E5E7EB",
+                  borderRadius: "12px",
+                  padding: "16px 20px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  opacity: isDeleting ? 0.5 : 1,
+                  transition: "all 0.2s",
+                }}
+              >
+                {/* Thumbnail */}
+                <div
+                  style={{
+                    width: "52px",
+                    height: "52px",
+                    borderRadius: "8px",
+                    background: "#0F1E35",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {mediaUrl ? (
+                    mediaUrl.includes(".mp4") || mediaUrl.includes(".mov") ? (
+                      <video
+                        src={mediaUrl}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                        muted
+                      />
+                    ) : (
+                      <img
+                        src={mediaUrl}
+                        alt={title}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    )
+                  ) : (
+                    <span style={{ fontSize: "22px", opacity: 0.4 }}>
+                      {config.icon}
+                    </span>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: "16px",
+                      fontWeight: 700,
+                      color: "#0D1117",
+                      margin: "0 0 3px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {title}
+                  </p>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: "'Barlow', sans-serif",
+                        fontSize: "11px",
+                        fontWeight: 300,
+                        color: "#9CA3AF",
+                      }}
+                    >
+                      {date}
+                    </span>
+                    {item.category && (
+                      <>
+                        <span
+                          style={{
+                            width: "3px",
+                            height: "3px",
+                            borderRadius: "50%",
+                            background: "#D1D5DB",
+                          }}
+                        />
+                        <span
+                          style={{
+                            fontFamily: "'Barlow Condensed', sans-serif",
+                            fontSize: "9px",
+                            fontWeight: 600,
+                            letterSpacing: "1.5px",
+                            textTransform: "uppercase",
+                            color: "#9CA3AF",
+                          }}
+                        >
+                          {item.category || item.tag}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Published toggle */}
+                <button
+                  onClick={() => handleTogglePublished(item)}
+                  style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: "9px",
+                    fontWeight: 700,
+                    letterSpacing: "1.5px",
+                    textTransform: "uppercase",
+                    padding: "6px 12px",
+                    borderRadius: "20px",
+                    border: "1.5px solid",
+                    borderColor: item.published
+                      ? "rgba(39,174,96,0.4)"
+                      : "#E5E7EB",
+                    background: item.published
+                      ? "rgba(39,174,96,0.1)"
+                      : "#F8F9FB",
+                    color: item.published ? "#16a34a" : "#9CA3AF",
+                    cursor: "pointer",
+                    flexShrink: 0,
+                    transition: "all 0.2s",
+                  }}
+                >
+                  {item.published ? "✓ Live" : "Hidden"}
+                </button>
+
+                {/* Delete button */}
+                <button
+                  onClick={() => handleDelete(item)}
+                  disabled={isDeleting}
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "8px",
+                    border: "1.5px solid rgba(220,38,38,0.2)",
+                    background: "rgba(220,38,38,0.05)",
+                    color: "#DC2626",
+                    cursor: isDeleting ? "not-allowed" : "pointer",
+                    fontSize: "15px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    transition: "all 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isDeleting) {
+                      e.currentTarget.style.background = "rgba(220,38,38,0.12)";
+                      e.currentTarget.style.borderColor = "rgba(220,38,38,0.4)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(220,38,38,0.05)";
+                    e.currentTarget.style.borderColor = "rgba(220,38,38,0.2)";
+                  }}
+                  title="Delete from live site"
+                >
+                  {isDeleting ? "..." : "🗑️"}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ── TABS ─────────────────────────────────────────────────────────────
 const TABS = [
@@ -10,6 +505,7 @@ const TABS = [
   { id: "projects", label: "Projects", icon: "📋" },
   { id: "programs", label: "Programs", icon: "🤝" },
   { id: "gallery", label: "Gallery", icon: "🖼️" },
+  { id: "published", label: "Published", icon: "🌐" },
 ];
 
 // ── CONSTANTS ─────────────────────────────────────────────────────────
@@ -381,7 +877,7 @@ const PublishRow = ({ onSave, onPublish, saved, label = "Post" }) => (
 );
 
 // ── HISTORY LIST ──────────────────────────────────────────────────────
-const HistoryList = ({ items, onLoad, emptyMsg }) => {
+const HistoryList = ({ items, onLoad, onDelete, emptyMsg }) => {
   if (!items.length)
     return (
       <div
@@ -421,7 +917,6 @@ const HistoryList = ({ items, onLoad, emptyMsg }) => {
       {items.map((item, i) => (
         <div
           key={item.id || i}
-          onClick={() => onLoad(item)}
           style={{
             background: "#FFFFFF",
             border: "1px solid #E5E7EB",
@@ -430,7 +925,6 @@ const HistoryList = ({ items, onLoad, emptyMsg }) => {
             display: "flex",
             alignItems: "center",
             gap: "14px",
-            cursor: "pointer",
             transition: "box-shadow 0.2s",
           }}
           onMouseEnter={(e) =>
@@ -469,7 +963,8 @@ const HistoryList = ({ items, onLoad, emptyMsg }) => {
               {item.savedAt ? new Date(item.savedAt).toLocaleString() : ""}
             </p>
           </div>
-          <span
+          <button
+            onClick={() => onLoad(item)}
             style={{
               fontFamily: "'Barlow Condensed', sans-serif",
               fontSize: "9px",
@@ -477,11 +972,42 @@ const HistoryList = ({ items, onLoad, emptyMsg }) => {
               letterSpacing: "2px",
               textTransform: "uppercase",
               color: "#2F8AC9",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: "6px 12px",
               flexShrink: 0,
+              transition: "color 0.2s",
             }}
+            onMouseEnter={(e) => (e.target.style.color = "#1A5A99")}
+            onMouseLeave={(e) => (e.target.style.color = "#2F8AC9")}
+            title="Load this item into the editor"
           >
             Load →
-          </span>
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(item.id || i);
+            }}
+            style={{
+              fontFamily: "'Barlow', sans-serif",
+              fontSize: "11px",
+              fontWeight: 500,
+              color: "#DC2626",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: "6px 8px",
+              flexShrink: 0,
+              transition: "color 0.2s",
+            }}
+            onMouseEnter={(e) => (e.target.style.color = "#991B1B")}
+            onMouseLeave={(e) => (e.target.style.color = "#DC2626")}
+            title="Delete this item"
+          >
+            🗑️
+          </button>
         </div>
       ))}
     </div>
@@ -499,27 +1025,29 @@ const AdminDashboard = () => {
   const [section, setSection] = useState("daily");
   const [subTab, setSubTab] = useState("compose"); // compose | history
 
-  const isMobile = window.innerWidth <= 768
+  const isMobile = window.innerWidth <= 768;
 
   const responsiveGrid2 = {
     display: "grid",
     gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
     gap: "12px",
-  }
+  };
 
   const responsiveGrid3 = {
     display: "grid",
     gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr",
     gap: "12px",
-  }
+  };
 
   // ── Auth guard ────────────────────────────────────
   useEffect(() => {
-    if (sessionStorage.getItem("fluxaid_admin") !== "true") navigate("/admin");
-  }, []);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) navigate("/admin");
+    });
+  }, [navigate]);
 
-  const logout = () => {
-    sessionStorage.removeItem("fluxaid_admin");
+  const logout = async () => {
+    await supabase.auth.signOut();
     navigate("/admin");
   };
 
@@ -575,10 +1103,11 @@ const AdminDashboard = () => {
   });
 
   // ── Save helpers ──────────────────────────────────
-  const saveToHistory = (key, item, setHist) => {
+  const saveToHistory = (key, item, setHist, supabaseId = null) => {
     const entry = {
       ...item,
       id: Date.now(),
+      supabaseId: supabaseId, // Store the Supabase ID for deletion
       savedAt: new Date().toISOString(),
     };
     const updated = [
@@ -594,13 +1123,180 @@ const AdminDashboard = () => {
     saveToHistory(key, data, setHist);
     setSaved(true);
   };
-  const handlePublish = (key, data, setHist, setSaved) => {
-    saveToHistory(key, data, setHist);
-    setSaved(true);
-    // → Replace with: await supabase.from(key).insert(data)  when Supabase is ready
-    alert(
-      `✅ "${data.title || data.alt}" published!\n\nWhen Supabase is connected this will go live immediately.`,
-    );
+
+  // ── Upload media file to Supabase Storage ────────────
+  const uploadMedia = async (file, folder) => {
+    if (!file) return null;
+
+    const ext = file.name.split(".").pop();
+    const fileName = `${folder}/${Date.now()}.${ext}`;
+
+    const { data, error } = await supabase.storage
+      .from("media")
+      .upload(fileName, file, { cacheControl: "3600", upsert: false });
+
+    if (error) {
+      console.error("Upload error:", error);
+      return null;
+    }
+
+    // Get the public URL
+    const { data: urlData } = supabase.storage
+      .from("media")
+      .getPublicUrl(fileName);
+
+    return urlData.publicUrl;
+  };
+
+  // ── Helper to map form data to database columns ─────
+  const buildRecord = (table, data, mediaUrl) => {
+    if (table === "gallery_items") {
+      return {
+        alt: data.alt,
+        category: data.category,
+        media_url: mediaUrl,
+        media_type: data.mediaType || "image",
+        emoji: data.emoji || "🌍",
+        published: true,
+      };
+    }
+    if (table === "daily_posts") {
+      return {
+        date: data.date,
+        tag: data.tag,
+        tag_color: data.tagColor,
+        title: data.title,
+        cover_emoji: data.coverEmoji,
+        media_url: mediaUrl,
+        media_type: data.mediaType || "image",
+        body: data.body.filter((p) => p.trim()),
+        highlight: data.highlight,
+        author: data.author,
+        author_role: data.authorRole,
+        location: data.location,
+        time: data.time,
+        published: true,
+      };
+    }
+    if (table === "blog_posts") {
+      return {
+        slug: data.slug,
+        category: data.category,
+        title: data.title,
+        excerpt: data.excerpt,
+        body_paragraphs: data.body.filter((p) => p.trim()),
+        author: data.author,
+        author_initials: data.authorInitials,
+        read_time: data.readTime,
+        cover_url: mediaUrl,
+        published: true,
+      };
+    }
+    if (table === "projects") {
+      return {
+        title: data.title,
+        category: data.category,
+        status: data.status,
+        location: data.location,
+        year: data.year,
+        description: data.description,
+        outcomes: data.outcomes.filter((o) => o.trim()),
+        icon: data.icon,
+        cover_url: mediaUrl,
+        media_type: data.mediaType || "image",
+        published: true,
+      };
+    }
+    if (table === "programs") {
+      return {
+        num: data.num,
+        icon: data.icon,
+        title: data.title,
+        description: data.desc,
+        stat: data.stat,
+        cover_url: mediaUrl,
+        published: true,
+      };
+    }
+  };
+
+  // ── Publish to Supabase ──────────────────────────────
+  const handlePublish = async (
+    table,
+    data,
+    mediaFile,
+    mediaFolder,
+    setHist,
+    setSaved,
+    storageKey,
+  ) => {
+    try {
+      // 1. Upload media file if one was chosen
+      let mediaUrl = null;
+      if (mediaFile) {
+        mediaUrl = await uploadMedia(mediaFile, mediaFolder);
+      }
+
+      // 2. Build the database record
+      const record = buildRecord(table, data, mediaUrl);
+
+      // 3. Save to Supabase
+      const { data: insertedData, error } = await supabase
+        .from(table)
+        .insert(record)
+        .select();
+
+      if (error) {
+        alert("Error publishing: " + error.message);
+        return;
+      }
+
+      // 4. Also save to local history with the Supabase ID
+      const supabaseId = insertedData?.[0]?.id;
+      saveToHistory(storageKey, data, setHist, supabaseId);
+      setSaved(true);
+      alert(`✅ Published successfully! It is now live on the website.`);
+    } catch (err) {
+      alert("Something went wrong: " + err.message);
+    }
+  };
+
+  // ── Delete from Supabase & local history ──────────
+  const handleDelete = async (itemId, table, storageKey, setHist, hist) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this item? This cannot be undone.",
+      )
+    ) {
+      return;
+    }
+
+    try {
+      // 1. Find the item in history
+      const itemToDelete = hist.find((item) => item.id === itemId);
+
+      // 2. If it has a Supabase ID, delete from Supabase
+      if (itemToDelete && itemToDelete.supabaseId) {
+        const { error } = await supabase
+          .from(table)
+          .delete()
+          .eq("id", itemToDelete.supabaseId);
+
+        if (error) {
+          alert("Error deleting from published: " + error.message);
+          return;
+        }
+      }
+
+      // 3. Remove from local history
+      const updated = hist.filter((item) => item.id !== itemId);
+      localStorage.setItem(storageKey, JSON.stringify(updated));
+      setHist(updated);
+
+      alert("✅ Item deleted successfully!");
+    } catch (err) {
+      alert("Something went wrong: " + err.message);
+    }
   };
 
   // ── Slug auto-generator ───────────────────────────
@@ -636,16 +1332,10 @@ const AdminDashboard = () => {
     cursor: "pointer",
     whiteSpace: "nowrap",
     flexShrink: 0,
-    background:
-      section === id
-        ? "rgba(47,138,201,0.15)"
-        : "transparent",
-    color:
-      section === id
-        ? "#2F8AC9"
-        : "rgba(200,214,232,0.45)",
+    background: section === id ? "rgba(47,138,201,0.15)" : "transparent",
+    color: section === id ? "#2F8AC9" : "rgba(200,214,232,0.45)",
     transition: "all 0.2s",
-  })
+  });
 
   const subTabBtn = (id) => ({
     fontFamily: "'Barlow Condensed', sans-serif",
@@ -679,9 +1369,7 @@ const AdminDashboard = () => {
           display: "flex",
           alignItems: isMobile ? "flex-start" : "center",
           justifyContent: "space-between",
-          padding: isMobile
-            ? "12px 16px"
-            : "0 clamp(16px,3vw,40px)",
+          padding: isMobile ? "12px 16px" : "0 clamp(16px,3vw,40px)",
           position: "sticky",
           top: 0,
           zIndex: 50,
@@ -761,8 +1449,8 @@ const AdminDashboard = () => {
             <button
               key={t.id}
               onClick={() => {
-                setSection(t.id)
-                setSubTab("compose")
+                setSection(t.id);
+                setSubTab("compose");
               }}
               style={activeTab(t.id)}
             >
@@ -853,6 +1541,8 @@ const AdminDashboard = () => {
           >
             🗂 History
           </button>
+
+          {section === "published" && <PublishedManager />}
         </div>
 
         {/* ════════════════════════════════════════
@@ -1159,7 +1849,15 @@ const AdminDashboard = () => {
                   handleSave("fa_daily", daily, setDailyHist, setDailySaved)
                 }
                 onPublish={() =>
-                  handlePublish("fa_daily", daily, setDailyHist, setDailySaved)
+                  handlePublish(
+                    "daily_posts",
+                    daily,
+                    daily.coverImage,
+                    "daily",
+                    setDailyHist,
+                    setDailySaved,
+                    "fa_daily",
+                  )
                 }
                 saved={dailySaved}
                 label="Daily Post"
@@ -1176,6 +1874,15 @@ const AdminDashboard = () => {
               setSubTab("compose");
               setDailySaved(false);
             }}
+            onDelete={(id) =>
+              handleDelete(
+                id,
+                "daily_posts",
+                "fa_daily",
+                setDailyHist,
+                dailyHist,
+              )
+            }
             emptyMsg="No daily posts saved yet."
           />
         )}
@@ -1419,7 +2126,15 @@ const AdminDashboard = () => {
                   handleSave("fa_blog", blog, setBlogHist, setBlogSaved)
                 }
                 onPublish={() =>
-                  handlePublish("fa_blog", blog, setBlogHist, setBlogSaved)
+                  handlePublish(
+                    "blog_posts",
+                    blog,
+                    blog.coverImage,
+                    "blog",
+                    setBlogHist,
+                    setBlogSaved,
+                    "fa_blog",
+                  )
                 }
                 saved={blogSaved}
                 label="Blog Post"
@@ -1436,6 +2151,9 @@ const AdminDashboard = () => {
               setSubTab("compose");
               setBlogSaved(false);
             }}
+            onDelete={(id) =>
+              handleDelete(id, "blog_posts", "fa_blog", setBlogHist, blogHist)
+            }
             emptyMsg="No blog posts saved yet."
           />
         )}
@@ -1699,10 +2417,13 @@ const AdminDashboard = () => {
                 }
                 onPublish={() =>
                   handlePublish(
-                    "fa_project",
+                    "projects",
                     project,
+                    project.coverImage,
+                    "projects",
                     setProjectHist,
                     setProjectSaved,
+                    "fa_project",
                   )
                 }
                 saved={projectSaved}
@@ -1720,6 +2441,15 @@ const AdminDashboard = () => {
               setSubTab("compose");
               setProjectSaved(false);
             }}
+            onDelete={(id) =>
+              handleDelete(
+                id,
+                "projects",
+                "fa_project",
+                setProjectHist,
+                projectHist,
+              )
+            }
             emptyMsg="No projects saved yet."
           />
         )}
@@ -1908,10 +2638,13 @@ const AdminDashboard = () => {
                 }
                 onPublish={() =>
                   handlePublish(
-                    "fa_program",
+                    "programs",
                     program,
+                    program.coverImage,
+                    "programs",
                     setProgramHist,
                     setProgramSaved,
+                    "fa_program",
                   )
                 }
                 saved={programSaved}
@@ -1929,6 +2662,15 @@ const AdminDashboard = () => {
               setSubTab("compose");
               setProgramSaved(false);
             }}
+            onDelete={(id) =>
+              handleDelete(
+                id,
+                "programs",
+                "fa_program",
+                setProgramHist,
+                programHist,
+              )
+            }
             emptyMsg="No programmes saved yet."
           />
         )}
@@ -2089,10 +2831,13 @@ const AdminDashboard = () => {
                 }
                 onPublish={() =>
                   handlePublish(
-                    "fa_gallery",
+                    "gallery_items",
                     gallery,
+                    gallery.mediaFile,
+                    "gallery",
                     setGalleryHist,
                     setGallerySaved,
+                    "fa_gallery",
                   )
                 }
                 saved={gallerySaved}
@@ -2147,18 +2892,14 @@ const AdminDashboard = () => {
                 {galleryHist.map((item, i) => (
                   <div
                     key={item.id || i}
-                    onClick={() => {
-                      setGallery(item);
-                      setSubTab("compose");
-                      setGallerySaved(false);
-                    }}
                     style={{
                       background: "#FFFFFF",
                       border: "1px solid #E5E7EB",
                       borderRadius: "12px",
                       overflow: "hidden",
-                      cursor: "pointer",
                       transition: "box-shadow 0.2s",
+                      display: "flex",
+                      flexDirection: "column",
                     }}
                     onMouseEnter={(e) =>
                       (e.currentTarget.style.boxShadow =
@@ -2170,6 +2911,11 @@ const AdminDashboard = () => {
                   >
                     {/* Thumbnail */}
                     <div
+                      onClick={() => {
+                        setGallery(item);
+                        setSubTab("compose");
+                        setGallerySaved(false);
+                      }}
                       style={{
                         height: "130px",
                         background: "#0F1E35",
@@ -2178,6 +2924,7 @@ const AdminDashboard = () => {
                         justifyContent: "center",
                         overflow: "hidden",
                         position: "relative",
+                        cursor: "pointer",
                       }}
                     >
                       {item.mediaPreview ? (
@@ -2228,7 +2975,7 @@ const AdminDashboard = () => {
                         </span>
                       )}
                     </div>
-                    <div style={{ padding: "12px" }}>
+                    <div style={{ padding: "12px", flex: 1 }}>
                       <p
                         style={{
                           fontFamily: "'Barlow', sans-serif",
@@ -2251,11 +2998,41 @@ const AdminDashboard = () => {
                           letterSpacing: "1.5px",
                           textTransform: "uppercase",
                           color: "#9CA3AF",
-                          margin: 0,
+                          margin: "0 0 8px 0",
                         }}
                       >
                         {item.category}
                       </p>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(
+                            item.id || i,
+                            "gallery_items",
+                            "fa_gallery",
+                            setGalleryHist,
+                            galleryHist,
+                          );
+                        }}
+                        style={{
+                          fontFamily: "'Barlow', sans-serif",
+                          fontSize: "10px",
+                          fontWeight: 500,
+                          color: "#DC2626",
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: "4px 0",
+                          width: "100%",
+                          textAlign: "center",
+                          transition: "color 0.2s",
+                        }}
+                        onMouseEnter={(e) => (e.target.style.color = "#991B1B")}
+                        onMouseLeave={(e) => (e.target.style.color = "#DC2626")}
+                        title="Delete this item"
+                      >
+                        🗑️ Delete
+                      </button>
                     </div>
                   </div>
                 ))}

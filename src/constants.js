@@ -8,8 +8,8 @@
 export const ORG_NAME = "Flux Aid Initiative";
 export const ORG_TAGLINE = "For the Vulnerable";
 export const ORG_SLOGAN = "Igniting Change · For the Vulnerable";
-export const FOUNDING_YEAR = "[Founding_Year]";
-export const CEO_NAME = "[CEO_Name]";
+export const FOUNDING_YEAR = "2020";
+export const CEO_NAME = "Mr Andy Ndukwe Ibezim";
 
 // ── CONTACT ───────────────────────────────────
 export const CONTACT = {
@@ -19,7 +19,7 @@ export const CONTACT = {
   phone2: "+234-8003683324",
   phone3: "+234-8179866007",
   email1: "fluxaidinitiative@gmail.com",
-  email2: "fluxaid@yahoo.com",
+  email2: "mail@fluxaid.org",
   website: "www.fluxaid.org",
   social: "@fluxaidinitiative",
 };

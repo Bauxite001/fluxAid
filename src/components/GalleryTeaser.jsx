@@ -1,33 +1,96 @@
-// GalleryTeaser.jsx
+// GalleryTeaser.jsx — fetches live gallery items from Supabase
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 
-const GALLERY_ITEMS = [
-  { id: 1, src: null, alt: "Field Activity", emoji: "🤝" },
-  { id: 2, src: null, alt: "Africa Outreach", emoji: "🌍" },
-  { id: 3, src: null, alt: "Youth Tech Programme", emoji: "👩🏾‍💻" },
-  { id: 4, src: null, alt: "Health Clinic", emoji: "🏥" },
-  { id: 5, src: null, alt: "Education Programme", emoji: "📖" },
-];
-
-const TOTAL_PHOTOS = 64;
+const isVideo = (url) => {
+  if (!url) return false;
+  return (
+    url.includes(".mp4") ||
+    url.includes(".mov") ||
+    url.includes(".webm") ||
+    url.includes("video")
+  );
+};
 
 const GalleryTeaser = () => {
-  const [isTablet, setIsTablet] = useState(false);
+  const [items, setItems] = useState([]);
+  const [total, setTotal] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsTablet(window.innerWidth <= 1024);
       setIsMobile(window.innerWidth <= 768);
+      setIsTablet(window.innerWidth <= 1024);
     };
-
     handleResize();
-
     window.addEventListener("resize", handleResize);
-
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    // Fetch preview items (5 for teaser)
+    supabase
+      .from("gallery_items")
+      .select("*")
+      .eq("published", true)
+      .order("created_at", { ascending: false })
+      .limit(5)
+      .then(({ data, error }) => {
+        if (error) console.error(error);
+        else setItems(data || []);
+      });
+
+    // Get total count
+    supabase
+      .from("gallery_items")
+      .select("id", { count: "exact" })
+      .eq("published", true)
+      .then(({ count }) => setTotal(count || 0));
+  }, []);
+
+  // Placeholder items shown when no data yet
+  const PLACEHOLDERS = [
+    {
+      id: "p1",
+      src: null,
+      alt: "Field Activity",
+      emoji: "🤝",
+      category: "Field Activity",
+    },
+    {
+      id: "p2",
+      src: null,
+      alt: "Africa Outreach",
+      emoji: "🌍",
+      category: "Community",
+    },
+    {
+      id: "p3",
+      src: null,
+      alt: "Youth Tech Programme",
+      emoji: "👩🏾‍💻",
+      category: "Team",
+    },
+    {
+      id: "p4",
+      src: null,
+      alt: "Health Clinic",
+      emoji: "🏥",
+      category: "Field Activity",
+    },
+    {
+      id: "p5",
+      src: null,
+      alt: "Education Programme",
+      emoji: "📖",
+      category: "Community",
+    },
+  ];
+
+  const displayItems = items.length > 0 ? items : PLACEHOLDERS;
+  const displayTotal = total > 0 ? total : 64;
 
   return (
     <section
@@ -44,14 +107,14 @@ const GalleryTeaser = () => {
           padding: isMobile ? "0 20px" : "0 40px",
         }}
       >
-        {/* ── HEADER ─────────────────────────── */}
+        {/* HEADER */}
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: isMobile ? "flex-start" : "flex-end",
             flexDirection: isMobile ? "column" : "row",
-            gap: isMobile ? "20px" : "0",
+            gap: isMobile ? "16px" : "0",
             marginBottom: isMobile ? "28px" : "40px",
           }}
         >
@@ -74,7 +137,6 @@ const GalleryTeaser = () => {
                   flexShrink: 0,
                 }}
               />
-
               <span
                 style={{
                   fontFamily: "'Barlow Condensed', sans-serif",
@@ -88,7 +150,6 @@ const GalleryTeaser = () => {
                 Moments in the Field
               </span>
             </div>
-
             <h2
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
@@ -111,7 +172,6 @@ const GalleryTeaser = () => {
               </em>
             </h2>
           </div>
-
           <a
             href="/gallery"
             style={{
@@ -127,226 +187,40 @@ const GalleryTeaser = () => {
               alignSelf: isMobile ? "flex-start" : "auto",
             }}
           >
-            View All {TOTAL_PHOTOS} Photos →
+            View All {displayTotal > 0 ? displayTotal : ""} Photos →
           </a>
         </div>
 
-        {/* ── MOSAIC GRID ────────────────────── */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile
-              ? "1fr"
-              : isTablet
-                ? "1.5fr 1fr"
-                : "2fr 1fr 1fr",
-            gridTemplateRows: isMobile
-              ? "420px repeat(4, 180px)"
-              : isTablet
-                ? "240px 240px 240px"
-                : "260px 260px",
-            gap: isMobile ? "14px" : "12px",
-          }}
-        >
-          {/* ── LARGE ITEM ───────────────────── */}
+        {/* MOSAIC GRID */}
+        {items.length > 0 ? (
           <div
             style={{
-              gridRow: isMobile ? "span 1" : "span 2",
-              gridColumn: isTablet && !isMobile ? "span 2" : "span 1",
-              position: "relative",
-              background: "#0F1E35",
-              borderRadius: isMobile ? "14px" : "16px",
-              overflow: "hidden",
-              cursor: "pointer",
-              boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-              minHeight: isMobile ? "420px" : "auto",
-            }}
-            onMouseEnter={(e) => {
-              if (!isMobile) {
-                e.currentTarget.querySelector(".overlay").style.opacity = "1";
-                e.currentTarget.querySelector(".label").style.opacity = "1";
-                e.currentTarget.querySelector(".img-inner").style.transform =
-                  "scale(1.04)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.querySelector(".overlay").style.opacity = "0";
-              e.currentTarget.querySelector(".label").style.opacity = "0";
-              e.currentTarget.querySelector(".img-inner").style.transform =
-                "scale(1)";
+              display: "grid",
+              gridTemplateColumns: isMobile
+                ? "1fr"
+                : isTablet
+                  ? "1.5fr 1fr"
+                  : "2fr 1fr 1fr",
+              gridTemplateRows: isMobile
+                ? "420px repeat(4, 180px)"
+                : isTablet
+                  ? "240px 240px 240px"
+                  : "260px 260px",
+              gap: isMobile ? "14px" : "12px",
             }}
           >
-            {/* Grid texture */}
+            {/* LARGE ITEM */}
             <div
               style={{
-                position: "absolute",
-                inset: 0,
-                backgroundImage:
-                  "linear-gradient(rgba(47,138,201,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(47,138,201,0.05) 1px, transparent 1px)",
-                backgroundSize: "36px 36px",
-                pointerEvents: "none",
-                zIndex: 1,
-              }}
-            />
-
-            {/* Glow */}
-            <div
-              style={{
-                position: "absolute",
-                top: "-60px",
-                right: "-60px",
-                width: isMobile ? "180px" : "240px",
-                height: isMobile ? "180px" : "240px",
-                background:
-                  "radial-gradient(circle, rgba(47,138,201,0.2) 0%, transparent 70%)",
-                borderRadius: "50%",
-                zIndex: 1,
-              }}
-            />
-
-            {/* Image / placeholder */}
-            <div
-              className="img-inner"
-              style={{
-                position: "absolute",
-                inset: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "transform 0.5s ease",
-              }}
-            >
-              {GALLERY_ITEMS[0].src ? (
-                <img
-                  src={GALLERY_ITEMS[0].src}
-                  alt={GALLERY_ITEMS[0].alt}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              ) : (
-                <span
-                  style={{
-                    fontSize: isMobile ? "56px" : "72px",
-                    opacity: 0.12,
-                    userSelect: "none",
-                    position: "relative",
-                    zIndex: 2,
-                  }}
-                >
-                  {GALLERY_ITEMS[0].emoji}
-                </span>
-              )}
-            </div>
-
-            {/* Bottom gradient */}
-            <div
-              style={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: "180px",
-                background:
-                  "linear-gradient(to top, rgba(15,30,53,0.9), transparent)",
-                zIndex: 3,
-              }}
-            />
-
-            {/* Hover overlay */}
-            <div
-              className="overlay"
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: "rgba(47,138,201,0.12)",
-                transition: "opacity 0.3s ease",
-                opacity: 0,
-                zIndex: 4,
-              }}
-            />
-
-            {/* Label */}
-            <span
-              className="label"
-              style={{
-                position: "absolute",
-                bottom: "20px",
-                left: "20px",
-                zIndex: 5,
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: "11px",
-                fontWeight: 600,
-                letterSpacing: "2px",
-                textTransform: "uppercase",
-                color: "rgba(200,214,232,0.9)",
-                transition: "opacity 0.3s ease",
-                opacity: isMobile ? 1 : 0,
-              }}
-            >
-              {GALLERY_ITEMS[0].alt}
-            </span>
-
-            {/* Badge */}
-            <span
-              style={{
-                position: "absolute",
-                top: "16px",
-                left: "16px",
-                zIndex: 5,
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: "9px",
-                fontWeight: 700,
-                letterSpacing: "2px",
-                textTransform: "uppercase",
-                color: "#2F8AC9",
-                background: "rgba(47,138,201,0.15)",
-                border: "1px solid rgba(47,138,201,0.3)",
-                padding: "5px 10px",
-                borderRadius: "4px",
-              }}
-            >
-              Featured
-            </span>
-          </div>
-
-          {/* ── SMALL ITEMS ──────────────────── */}
-          {GALLERY_ITEMS.slice(1, 4).map((item, i) => (
-            <div
-              key={item.id}
-              style={{
+                gridRow: isMobile ? "span 1" : "span 2",
+                gridColumn: isTablet && !isMobile ? "span 2" : "span 1",
                 position: "relative",
-                background: i % 2 === 0 ? "#FFFFFF" : "#EEF2F7",
-                borderRadius: "12px",
+                background: "#0F1E35",
+                borderRadius: isMobile ? "14px" : "16px",
                 overflow: "hidden",
                 cursor: "pointer",
-                border: "1px solid #E5E7EB",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: isMobile ? "180px" : "auto",
-              }}
-              onMouseEnter={(e) => {
-                if (!isMobile) {
-                  e.currentTarget.querySelector(".sm-overlay").style.opacity =
-                    "1";
-
-                  e.currentTarget.querySelector(".sm-label").style.opacity =
-                    "1";
-
-                  e.currentTarget.querySelector(".sm-inner").style.transform =
-                    "scale(1.05)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.querySelector(".sm-overlay").style.opacity =
-                  "0";
-                e.currentTarget.querySelector(".sm-label").style.opacity = "0";
-                e.currentTarget.querySelector(".sm-inner").style.transform =
-                  "scale(1)";
+                boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+                minHeight: isMobile ? "420px" : "auto",
               }}
             >
               {/* Grid texture */}
@@ -355,215 +229,486 @@ const GalleryTeaser = () => {
                   position: "absolute",
                   inset: 0,
                   backgroundImage:
-                    "linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px)",
-                  backgroundSize: "24px 24px",
+                    "linear-gradient(rgba(47,138,201,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(47,138,201,0.05) 1px, transparent 1px)",
+                  backgroundSize: "36px 36px",
                   pointerEvents: "none",
+                  zIndex: 1,
                 }}
               />
 
-              {/* Image / Emoji */}
+              {/* Glow */}
               <div
-                className="sm-inner"
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "100%",
-                  height: "100%",
-                  transition: "transform 0.5s ease",
                   position: "absolute",
-                  inset: 0,
+                  top: "-60px",
+                  right: "-60px",
+                  width: "240px",
+                  height: "240px",
+                  background:
+                    "radial-gradient(circle, rgba(47,138,201,0.2) 0%, transparent 70%)",
+                  borderRadius: "50%",
+                  zIndex: 1,
                 }}
-              >
-                {item.src ? (
-                  <img
-                    src={item.src}
-                    alt={item.alt}
+              />
+
+              {/* Media */}
+              {displayItems[0]?.media_url ? (
+                isVideo(displayItems[0].media_url) ? (
+                  <video
+                    src={displayItems[0].media_url}
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
                     style={{
+                      position: "absolute",
+                      inset: 0,
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
                     }}
                   />
                 ) : (
+                  <img
+                    src={displayItems[0].media_url}
+                    alt={displayItems[0].alt}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                )
+              ) : (
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 2,
+                  }}
+                >
                   <span
                     style={{
-                      fontSize: isMobile ? "32px" : "36px",
-                      opacity: 0.25,
+                      fontSize: "72px",
+                      opacity: 0.1,
                       userSelect: "none",
                     }}
                   >
-                    {item.emoji}
+                    {displayItems[0]?.emoji || "🌍"}
                   </span>
-                )}
-              </div>
+                </div>
+              )}
 
-              {/* Overlay */}
+              {/* Video badge */}
+              {displayItems[0]?.media_url &&
+                isVideo(displayItems[0].media_url) && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "14px",
+                      left: "60px",
+                      zIndex: 5,
+                      background: "rgba(108,96,158,0.85)",
+                      backdropFilter: "blur(8px)",
+                      borderRadius: "4px",
+                      padding: "4px 10px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "5px",
+                    }}
+                  >
+                    <span style={{ fontSize: "10px" }}>▶</span>
+                    <span
+                      style={{
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontSize: "8px",
+                        fontWeight: 700,
+                        letterSpacing: "1.5px",
+                        textTransform: "uppercase",
+                        color: "white",
+                      }}
+                    >
+                      Video
+                    </span>
+                  </div>
+                )}
+
+              {/* Bottom gradient */}
               <div
-                className="sm-overlay"
                 style={{
                   position: "absolute",
-                  inset: 0,
-                  background: "rgba(47,138,201,0.1)",
-                  transition: "opacity 0.3s ease",
-                  opacity: 0,
-                  zIndex: 2,
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: "180px",
+                  background:
+                    "linear-gradient(to top, rgba(15,30,53,0.9), transparent)",
+                  zIndex: 3,
                 }}
               />
 
-              {/* Label */}
+              {/* Alt text */}
               <span
-                className="sm-label"
                 style={{
                   position: "absolute",
-                  bottom: "10px",
-                  left: "12px",
-                  zIndex: 3,
+                  bottom: "20px",
+                  left: "20px",
+                  zIndex: 5,
                   fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: "9px",
+                  fontSize: "11px",
                   fontWeight: 600,
                   letterSpacing: "2px",
                   textTransform: "uppercase",
-                  color: "#0D1117",
-                  transition: "opacity 0.3s ease",
-                  opacity: isMobile ? 1 : 0,
+                  color: "rgba(200,214,232,0.9)",
                 }}
               >
-                {item.alt}
+                {displayItems[0]?.alt}
+              </span>
+
+              {/* Featured badge */}
+              <span
+                style={{
+                  position: "absolute",
+                  top: "16px",
+                  left: "16px",
+                  zIndex: 5,
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "9px",
+                  fontWeight: 700,
+                  letterSpacing: "2px",
+                  textTransform: "uppercase",
+                  color: "#2F8AC9",
+                  background: "rgba(47,138,201,0.15)",
+                  border: "1px solid rgba(47,138,201,0.3)",
+                  padding: "5px 10px",
+                  borderRadius: "4px",
+                }}
+              >
+                Featured
               </span>
             </div>
-          ))}
 
-          {/* ── MORE TILE ────────────────────── */}
-          <a
-            href="/gallery"
+            {/* SMALL ITEMS */}
+            {displayItems.slice(1, 4).map((item, i) => (
+              <div
+                key={item.id}
+                style={{
+                  position: "relative",
+                  background: i % 2 === 0 ? "#FFFFFF" : "#EEF2F7",
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  border: "1px solid #E5E7EB",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  minHeight: isMobile ? "180px" : "auto",
+                }}
+              >
+                {/* Grid texture */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    backgroundImage:
+                      "linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px)",
+                    backgroundSize: "24px 24px",
+                    pointerEvents: "none",
+                  }}
+                />
+
+                {/* Media */}
+                {item.media_url ? (
+                  isVideo(item.media_url) ? (
+                    <video
+                      src={item.media_url}
+                      muted
+                      loop
+                      playsInline
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={item.media_url}
+                      alt={item.alt}
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  )
+                ) : (
+                  <span
+                    style={{
+                      fontSize: "36px",
+                      opacity: 0.25,
+                      userSelect: "none",
+                      position: "relative",
+                      zIndex: 1,
+                    }}
+                  >
+                    {item.emoji || "📷"}
+                  </span>
+                )}
+
+                {/* Video badge */}
+                {item.media_url && isVideo(item.media_url) && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "8px",
+                      right: "8px",
+                      background: "rgba(108,96,158,0.8)",
+                      borderRadius: "4px",
+                      padding: "2px 7px",
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      fontSize: "8px",
+                      fontWeight: 700,
+                      letterSpacing: "1px",
+                      textTransform: "uppercase",
+                      color: "white",
+                      zIndex: 3,
+                    }}
+                  >
+                    VIDEO
+                  </div>
+                )}
+
+                {/* Alt text — always visible */}
+                {!item.src && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      bottom: "10px",
+                      left: "12px",
+                      right: "12px",
+                      zIndex: 3,
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: "13px",
+                      fontWeight: 700,
+                      color: "#0D1117",
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {item.alt}
+                  </span>
+                )}
+              </div>
+            ))}
+
+            {/* MORE TILE */}
+            <a
+              href="/gallery"
+              style={{
+                position: "relative",
+                background: "#0F1E35",
+                borderRadius: "12px",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textDecoration: "none",
+                cursor: "pointer",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+                transition: "all 0.25s ease",
+                minHeight: isMobile ? "180px" : "auto",
+              }}
+              onMouseEnter={(e) => {
+                if (!isMobile) {
+                  e.currentTarget.style.transform = "translateY(-3px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 12px 36px rgba(0,0,0,0.2), 0 0 0 1.5px rgba(47,138,201,0.4)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.12)";
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  backgroundImage:
+                    "linear-gradient(rgba(47,138,201,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(47,138,201,0.05) 1px, transparent 1px)",
+                  backgroundSize: "28px 28px",
+                  pointerEvents: "none",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "-30px",
+                  right: "-30px",
+                  width: "140px",
+                  height: "140px",
+                  background:
+                    "radial-gradient(circle, rgba(108,96,158,0.25) 0%, transparent 70%)",
+                  borderRadius: "50%",
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(28px, 3vw, 40px)",
+                  fontWeight: 700,
+                  color: "#F0F6FF",
+                  lineHeight: 1,
+                  marginBottom: "6px",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
+                {displayTotal > 5 ? `+${displayTotal - 5}` : "View"}
+              </span>
+              <span
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "9px",
+                  fontWeight: 600,
+                  letterSpacing: "2.5px",
+                  textTransform: "uppercase",
+                  color: "rgba(200,214,232,0.5)",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
+                More Photos
+              </span>
+            </a>
+          </div>
+        ) : (
+          /* EMPTY STATE */
+          <div
             style={{
-              position: "relative",
-              background: "#0F1E35",
-              borderRadius: "12px",
-              overflow: "hidden",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              textDecoration: "none",
-              cursor: "pointer",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
-              transition: "all 0.25s ease",
-              minHeight: isMobile ? "180px" : "auto",
-            }}
-            onMouseEnter={(e) => {
-              if (!isMobile) {
-                e.currentTarget.style.transform = "translateY(-3px)";
-                e.currentTarget.style.boxShadow =
-                  "0 12px 36px rgba(0,0,0,0.2), 0 0 0 1.5px rgba(47,138,201,0.4)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.12)";
+              background: "#FFFFFF",
+              border: "1px solid #E5E7EB",
+              borderRadius: "16px",
+              padding: "clamp(40px, 8vw, 60px)",
+              textAlign: "center",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
             }}
           >
-            {/* Grid texture */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                backgroundImage:
-                  "linear-gradient(rgba(47,138,201,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(47,138,201,0.05) 1px, transparent 1px)",
-                backgroundSize: "28px 28px",
-                pointerEvents: "none",
-              }}
-            />
-
-            {/* Glow */}
-            <div
-              style={{
-                position: "absolute",
-                bottom: "-30px",
-                right: "-30px",
-                width: "140px",
-                height: "140px",
-                background:
-                  "radial-gradient(circle, rgba(108,96,158,0.25) 0%, transparent 70%)",
-                borderRadius: "50%",
-              }}
-            />
-
             <span
+              style={{
+                fontSize: "48px",
+                display: "block",
+                marginBottom: "16px",
+                opacity: 0.3,
+              }}
+            >
+              🖼️
+            </span>
+            <h3
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(28px, 3vw, 40px)",
+                fontSize: "24px",
                 fontWeight: 700,
-                color: "#F0F6FF",
-                lineHeight: 1,
-                marginBottom: "6px",
-                position: "relative",
-                zIndex: 1,
+                color: "#0D1117",
+                marginBottom: "8px",
               }}
             >
-              +{TOTAL_PHOTOS - GALLERY_ITEMS.length}
-            </span>
-
-            <span
+              Gallery Coming Soon
+            </h3>
+            <p
               style={{
+                fontFamily: "'Barlow', sans-serif",
+                fontSize: "14px",
+                fontWeight: 300,
+                color: "#6B7280",
+                lineHeight: 1.6,
+                maxWidth: "480px",
+                margin: "0 auto 24px",
+              }}
+            >
+              We're capturing moments from our field activities. Check back soon
+              to see photos and videos from our latest programs and impact
+              stories.
+            </p>
+            <a
+              href="/contact"
+              style={{
+                display: "inline-block",
                 fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: "9px",
-                fontWeight: 600,
+                fontSize: "10px",
+                fontWeight: 700,
                 letterSpacing: "2.5px",
                 textTransform: "uppercase",
-                color: "rgba(200,214,232,0.5)",
-                position: "relative",
-                zIndex: 1,
+                color: "#FFFFFF",
+                textDecoration: "none",
+                background: "#2F8AC9",
+                padding: "13px 28px",
+                borderRadius: "6px",
+                transition: "opacity 0.2s",
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
             >
-              More Photos
-            </span>
-          </a>
-        </div>
+              Get Involved
+            </a>
+          </div>
+        )}
 
-        {/* ── VIEW ALL BUTTON ───────────────── */}
-        <div
-          style={{
-            marginTop: isMobile ? "18px" : "20px",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <a
-            href="/gallery"
+        {/* VIEW ALL BUTTON */}
+        {items.length > 0 && (
+          <div
             style={{
-              fontFamily: "'Barlow Condensed', sans-serif",
-              fontSize: "10px",
-              fontWeight: 700,
-              letterSpacing: "2.5px",
-              textTransform: "uppercase",
-              color: "#2F8AC9",
-              textDecoration: "none",
-              border: "1.5px solid rgba(47,138,201,0.35)",
-              borderRadius: "6px",
-              padding: isMobile ? "12px 24px" : "13px 32px",
-              background: "transparent",
-              transition: "all 0.2s",
-              display: "inline-block",
-              textAlign: "center",
-            }}
-            onMouseEnter={(e) => {
-              if (!isMobile) {
-                e.currentTarget.style.background = "#2F8AC9";
-                e.currentTarget.style.color = "#FFFFFF";
-                e.currentTarget.style.borderColor = "#2F8AC9";
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.color = "#2F8AC9";
-              e.currentTarget.style.borderColor = "rgba(47,138,201,0.35)";
+              marginTop: isMobile ? "18px" : "20px",
+              display: "flex",
+              justifyContent: "center",
             }}
           >
-            View Full Gallery →
-          </a>
-        </div>
+            <a
+              href="/gallery"
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "10px",
+                fontWeight: 700,
+                letterSpacing: "2.5px",
+                textTransform: "uppercase",
+                color: "#2F8AC9",
+                textDecoration: "none",
+                border: "1.5px solid rgba(47,138,201,0.35)",
+                borderRadius: "6px",
+                padding: isMobile ? "12px 24px" : "13px 32px",
+                background: "transparent",
+                transition: "all 0.2s",
+                display: "inline-block",
+                textAlign: "center",
+              }}
+              onMouseEnter={(e) => {
+                if (!isMobile) {
+                  e.currentTarget.style.background = "#2F8AC9";
+                  e.currentTarget.style.color = "#FFFFFF";
+                  e.currentTarget.style.borderColor = "#2F8AC9";
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "#2F8AC9";
+                e.currentTarget.style.borderColor = "rgba(47,138,201,0.35)";
+              }}
+            >
+              View Full Gallery →
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );

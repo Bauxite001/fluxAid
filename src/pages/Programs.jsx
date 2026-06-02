@@ -1,10 +1,13 @@
 // pages/Programs.jsx
 
-import { PROGRAMS } from "../constants";
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
+import { PROGRAMS as FALLBACK_PROGRAMS } from "../constants";
 
-const PROGRAM_DETAILS = [
+// Fallback program details (used when Supabase is empty)
+const FALLBACK_PROGRAM_DETAILS = [
   {
-    ...PROGRAMS[0],
+    ...FALLBACK_PROGRAMS[0],
     fullDesc: [
       "Flux Aid Initiative's Advocacy & Human Rights programme is built on the belief that every person — regardless of gender, age, or economic status — deserves to live with dignity, freedom, and protection under the law.",
       "We work with communities, local authorities, and civil society organisations to champion the rights of the most vulnerable — including women, children, and those affected by poverty and displacement.",
@@ -21,7 +24,7 @@ const PROGRAM_DETAILS = [
     color: "#C8C8C8",
   },
   {
-    ...PROGRAMS[1],
+    ...FALLBACK_PROGRAMS[1],
     fullDesc: [
       "Economic vulnerability is one of the biggest barriers to human dignity. Our Empowerment & Economic Development programme addresses this directly — giving people the skills, knowledge, and confidence to build sustainable livelihoods.",
       "We run financial literacy programmes, skills training workshops, and mentorship initiatives targeted at unemployed youth, women in rural communities, and those living below the poverty line.",
@@ -38,7 +41,7 @@ const PROGRAM_DETAILS = [
     color: "#9A9A9A",
   },
   {
-    ...PROGRAMS[2],
+    ...FALLBACK_PROGRAMS[2],
     fullDesc: [
       "Change does not happen in silence. Our Public Awareness & Change programme is dedicated to building an informed, engaged, and empowered citizenry across Nigeria and Africa.",
       "We mobilise communities through town halls, media campaigns, and grassroots outreach — encouraging people to understand the systems that affect their lives and to participate actively in shaping them.",
@@ -57,6 +60,46 @@ const PROGRAM_DETAILS = [
 ];
 
 const Programs = () => {
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch programs from Supabase
+    supabase
+      .from("programs")
+      .select("*")
+      .eq("published", true)
+      .order("created_at", { ascending: true })
+      .limit(3)
+      .then(({ data, error }) => {
+        if (error) {
+          console.error(error);
+          // Fall back to hardcoded details if fetch fails
+          setPrograms(FALLBACK_PROGRAM_DETAILS);
+        } else if (data && data.length > 0) {
+          // Build full program details from Supabase data
+          const detailed = data.map((p, i) => ({
+            num: p.num || String(i + 1).padStart(2, "0"),
+            icon: p.icon || "⚖️",
+            title: p.title,
+            description: p.description,
+            stat: p.stat || "",
+            fullDesc: [p.description], // Single description as fallback
+            focus: [], // Would need additional table or field in DB
+            impact: p.stat || "Growing impact every day",
+            color: ["#C8C8C8", "#9A9A9A", "#E8E0D0"][i] || "#C8C8C8",
+          }));
+          setPrograms(detailed);
+        } else {
+          // No programs published yet, use fallback
+          setPrograms(FALLBACK_PROGRAM_DETAILS);
+        }
+        setLoading(false);
+      });
+  }, []);
+
+  const displayPrograms = loading ? FALLBACK_PROGRAM_DETAILS : programs;
+
   return (
     <div
       style={{
@@ -235,7 +278,7 @@ const Programs = () => {
           borderBottom: "1px solid #E0E7F1",
         }}
       >
-        {PROGRAM_DETAILS.map((prog, i) => (
+        {displayPrograms.map((prog, i) => (
           <a
             key={prog.num}
             href={`#program-${prog.num}`}
@@ -247,7 +290,7 @@ const Programs = () => {
               textDecoration: "none",
               background: "#FFFFFF",
               borderRight:
-                i < PROGRAM_DETAILS.length - 1 ? "1px solid #E0E7F1" : "none",
+                i < displayPrograms.length - 1 ? "1px solid #E0E7F1" : "none",
               borderBottom: "1px solid #E0E7F1",
               cursor: "pointer",
               transition: "background-color 0.2s ease",
@@ -295,14 +338,14 @@ const Programs = () => {
       </div>
 
       {/* ── PROGRAM SECTIONS ───────────────── */}
-      {PROGRAM_DETAILS.map((prog, i) => (
+      {displayPrograms.map((prog, i) => (
         <section
           key={prog.num}
           id={`program-${prog.num}`}
           style={{
             padding: "clamp(56px, 8vw, 64px) clamp(20px, 6vw, 80px)",
             borderBottom:
-              i < PROGRAM_DETAILS.length - 1 ? "1px solid #E0E7F1" : "none",
+              i < displayPrograms.length - 1 ? "1px solid #E0E7F1" : "none",
             background: "#F8F9FB",
           }}
         >

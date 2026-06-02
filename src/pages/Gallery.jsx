@@ -1,135 +1,7 @@
 // pages/Gallery.jsx
 
 import { useState, useEffect } from "react";
-
-const GALLERY_ITEMS = [
-  {
-    id: 1,
-    src: null,
-    alt: "DANGA Award Ceremony 2024",
-    emoji: "🏆",
-    category: "Awards",
-  },
-  {
-    id: 2,
-    src: null,
-    alt: "Field team in Lagos",
-    emoji: "🤝",
-    category: "Team",
-  },
-  {
-    id: 3,
-    src: null,
-    alt: "Women Rise workshop attendees",
-    emoji: "👩🏾",
-    category: "Field Activity",
-  },
-  {
-    id: 4,
-    src: null,
-    alt: "Mobile health clinic Nairobi",
-    emoji: "🏥",
-    category: "Field Activity",
-  },
-  {
-    id: 5,
-    src: null,
-    alt: "Books donation Kampala schools",
-    emoji: "📚",
-    category: "Community",
-  },
-  {
-    id: 6,
-    src: null,
-    alt: "Flux Aid branded field shirt",
-    emoji: "👕",
-    category: "Branded",
-  },
-  {
-    id: 7,
-    src: null,
-    alt: "Green Futures tree planting Dakar",
-    emoji: "🌱",
-    category: "Field Activity",
-  },
-  {
-    id: 8,
-    src: null,
-    alt: "DANGA awardees 2024",
-    emoji: "🎖️",
-    category: "Awards",
-  },
-  {
-    id: 9,
-    src: null,
-    alt: "Child rights workshop Abuja",
-    emoji: "⚖️",
-    category: "Community",
-  },
-  {
-    id: 10,
-    src: null,
-    alt: "Youth tech bootcamp Accra graduates",
-    emoji: "💻",
-    category: "Field Activity",
-  },
-  {
-    id: 11,
-    src: null,
-    alt: "Flux Aid team Abuja office",
-    emoji: "🏢",
-    category: "Team",
-  },
-  {
-    id: 12,
-    src: null,
-    alt: "Community dialogue session",
-    emoji: "📢",
-    category: "Community",
-  },
-  {
-    id: 13,
-    src: null,
-    alt: "Award nomination letters",
-    emoji: "📄",
-    category: "Awards",
-  },
-  {
-    id: 14,
-    src: null,
-    alt: "Flux Aid branded shirt — field use",
-    emoji: "👕",
-    category: "Branded",
-  },
-  {
-    id: 15,
-    src: null,
-    alt: "Women Rise Lagos forum",
-    emoji: "🎤",
-    category: "Field Activity",
-  },
-  {
-    id: 16,
-    src: null,
-    alt: "Volunteer induction day",
-    emoji: "🙋🏾",
-    category: "Team",
-  },
-  {
-    id: 17,
-    src: null,
-    alt: "Health screening day Nairobi",
-    emoji: "💊",
-    category: "Field Activity",
-  },
-  {
-    id: 18,
-    src: null,
-    alt: "Community leaders summit",
-    emoji: "🌍",
-    category: "Community",
-  },
-];
+import { supabase } from "../lib/supabase";
 
 const CATEGORIES = [
   "All",
@@ -149,10 +21,26 @@ const CAT_COLOR = {
 };
 
 const Gallery = () => {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("All");
   const [lightbox, setLightbox] = useState(null);
   const [hoveredId, setHoveredId] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Fetch gallery items from Supabase
+  useEffect(() => {
+    supabase
+      .from("gallery_items")
+      .select("*")
+      .eq("published", true)
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) console.error(error);
+        else setItems(data || []);
+        setLoading(false);
+      });
+  }, []);
 
   // Track window resizing for element tracking anomalies on mobile vs desktop
   useEffect(() => {
@@ -166,8 +54,8 @@ const Gallery = () => {
 
   const filtered =
     activeCategory === "All"
-      ? GALLERY_ITEMS
-      : GALLERY_ITEMS.filter((i) => i.category === activeCategory);
+      ? items
+      : items.filter((i) => i.category === activeCategory);
 
   const lbIndex = lightbox
     ? filtered.findIndex((i) => i.id === lightbox.id)
@@ -399,7 +287,43 @@ const Gallery = () => {
           margin: "0 auto",
         }}
       >
-        {filtered.length > 0 ? (
+        {loading && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              padding: "80px",
+            }}
+          >
+            <p
+              style={{
+                fontFamily: "'Barlow', sans-serif",
+                fontSize: "14px",
+                color: "#9CA3AF",
+              }}
+            >
+              Loading gallery...
+            </p>
+          </div>
+        )}
+
+        {!loading && filtered.length === 0 && (
+          <div style={{ textAlign: "center", padding: "80px" }}>
+            <span style={{ fontSize: "48px", opacity: 0.2 }}>🖼️</span>
+            <p
+              style={{
+                fontFamily: "'Barlow', sans-serif",
+                fontSize: "14px",
+                color: "#9CA3AF",
+                marginTop: "16px",
+              }}
+            >
+              No photos yet. Check back soon.
+            </p>
+          </div>
+        )}
+
+        {!loading && filtered.length > 0 && (
           <div
             style={{
               display: "grid",
@@ -492,20 +416,42 @@ const Gallery = () => {
                   />
 
                   {/* Image or placeholder */}
-                  {item.src ? (
-                    <img
-                      src={item.src}
-                      alt={item.alt}
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        transition: "transform 0.5s ease",
-                        transform: hovered ? "scale(1.06)" : "scale(1)",
-                      }}
-                    />
+                  {item.media_url ? (
+                    item.media_url.includes(".mp4") ||
+                    item.media_url.includes(".mov") ||
+                    item.media_url.includes(".webm") ? (
+                      <video
+                        src={item.media_url}
+                        muted
+                        loop
+                        playsInline
+                        autoPlay={hoveredId === item.id}
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          transition: "transform 0.5s ease",
+                          transform:
+                            hoveredId === item.id ? "scale(1.04)" : "scale(1)",
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src={item.media_url}
+                        alt={item.alt}
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          transition: "transform 0.5s ease",
+                          transform: hovered ? "scale(1.06)" : "scale(1)",
+                        }}
+                      />
+                    )
                   ) : (
                     <span
                       style={{
@@ -619,44 +565,6 @@ const Gallery = () => {
                 </button>
               );
             })}
-          </div>
-        ) : (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "120px 0",
-              textAlign: "center",
-            }}
-          >
-            <span
-              style={{ fontSize: "48px", opacity: 0.2, marginBottom: "16px" }}
-            >
-              🖼️
-            </span>
-            <h3
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "24px",
-                fontWeight: 700,
-                color: "#0D1117",
-                marginBottom: "10px",
-              }}
-            >
-              No photos yet
-            </h3>
-            <p
-              style={{
-                fontFamily: "'Barlow', sans-serif",
-                fontSize: "14px",
-                fontWeight: 300,
-                color: "#9CA3AF",
-              }}
-            >
-              No photos found in this category. Check back soon.
-            </p>
           </div>
         )}
       </div>
@@ -830,24 +738,11 @@ const Gallery = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 gap: "12px",
-                opacity: 0.2,
                 position: "relative",
                 zIndex: 1,
               }}
             >
-              <span style={{ fontSize: isMobile ? "48px" : "64px" }}>👕</span>
-              <span
-                style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: "9px",
-                  fontWeight: 600,
-                  letterSpacing: "2px",
-                  textTransform: "uppercase",
-                  color: "#9CA3AF",
-                }}
-              >
-                Branded shirt photo here
-              </span>
+              <img src="/flux_shirt2.jpeg" alt="shirt" />
             </div>
           </div>
         </div>
@@ -924,18 +819,35 @@ const Gallery = () => {
                 }}
               />
 
-              {lightbox.src ? (
-                <img
-                  src={lightbox.src}
-                  alt={lightbox.alt}
-                  style={{
-                    width: "100%",
-                    maxHeight: "65vh",
-                    objectFit: "contain",
-                    position: "relative",
-                    zIndex: 1,
-                  }}
-                />
+              {lightbox.media_url ? (
+                lightbox.media_url.includes(".mp4") ||
+                lightbox.media_url.includes(".mov") ||
+                lightbox.media_url.includes(".webm") ? (
+                  <video
+                    src={lightbox.media_url}
+                    controls
+                    autoPlay
+                    style={{
+                      width: "100%",
+                      maxHeight: "65vh",
+                      objectFit: "contain",
+                      position: "relative",
+                      zIndex: 1,
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={lightbox.media_url}
+                    alt={lightbox.alt}
+                    style={{
+                      width: "100%",
+                      maxHeight: "65vh",
+                      objectFit: "contain",
+                      position: "relative",
+                      zIndex: 1,
+                    }}
+                  />
+                )
               ) : (
                 <div
                   style={{
@@ -962,7 +874,7 @@ const Gallery = () => {
                       color: "#9CA3AF",
                     }}
                   >
-                    Photo placeholder
+                    Photo coming soon
                   </span>
                 </div>
               )}

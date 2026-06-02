@@ -663,23 +663,13 @@ const About = () => {
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "12px",
-                    opacity: 0.2,
                   }}
                 >
-                  <span style={{ fontSize: "56px" }}>👤</span>
-
-                  <span
-                    style={{
-                      fontFamily: "'Barlow Condensed', sans-serif",
-                      fontSize: "9px",
-                      fontWeight: 600,
-                      letterSpacing: "2px",
-                      textTransform: "uppercase",
-                      color: "#9CA3AF",
-                    }}
-                  >
-                    Photo Coming Soon
-                  </span>
+                  <img
+                    src="/CEO_flux.jpeg"
+                    alt="ceo_flux
+                  "
+                  />
                 </div>
               </div>
             </div>
