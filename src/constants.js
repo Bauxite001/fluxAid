@@ -124,7 +124,7 @@ export const DONATION_TIERS = [
 ];
 
 // ── CEO BIO ───────────────────────────────────
-export const CEO_BIO_SHORT = `${CEO_NAME} is the founder and Chief Executive of Flux Aid Initiative, a non-governmental organisation dedicated to advocacy, empowerment, and the upliftment of vulnerable communities across Nigeria and Africa. Driven by an unshakeable belief that integrity and selfless service are the hallmarks of true leadership, ${CEO_NAME} established Flux Aid to bridge the gap between excellence and recognition — and between aspiration and opportunity for those society has left behind.`;
+export const CEO_BIO_SHORT = `${CEO_NAME} is the Country Director and Founder of Flux Aid Initiative, a non-governmental organisation dedicated to advocacy, empowerment, and the upliftment of vulnerable communities across Nigeria and Africa. Driven by an unshakeable belief that integrity and selfless service are the hallmarks of true leadership, ${CEO_NAME} established Flux Aid to bridge the gap between excellence and recognition — and between aspiration and opportunity for those society has left behind.`;
 
 // ── DANGA AWARD ───────────────────────────────
 export const DANGA = {
