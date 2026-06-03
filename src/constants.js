@@ -15,8 +15,8 @@ export const CEO_NAME = "Mr Andy Ndukwe Ibezim";
 export const CONTACT = {
   abuja: "No. 20 Lome Crescent, Wuse Zone 7, Abuja",
   lagos: "4/6 Mobolaji Anthony Street, Lagos Island",
-  phone1: "+234-8003681499",
-  phone2: "+234-8003683324",
+  phone1: "+234-9031681499",
+  phone2: "+234-8089683324",
   phone3: "+234-8179866007",
   email1: "fluxaidinitiative@gmail.com",
   email2: "mail@fluxaid.org",
