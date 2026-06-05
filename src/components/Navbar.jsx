@@ -1,235 +1,540 @@
-// ─────────────────────────────────────────────
 // Navbar.jsx
-// Sticky top navigation bar
-// Desktop: full links + Volunteer + Donate
-// Mobile: logo + Donate + hamburger menu
-// ─────────────────────────────────────────────
 
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { ORG_NAME, ORG_TAGLINE, NAV_LINKS } from "../constants";
-import Button from "./Button";
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activePath, setActivePath] = useState("/");
+  const [isDesktop, setIsDesktop] = useState(false);
+  const location = useLocation();
 
-  // ── Scroll detection — adds border on scroll ──
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 10);
+    const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ── Set active path ───────────────────────────
   useEffect(() => {
-    setActivePath(window.location.pathname);
+    const check = () => setIsDesktop(window.innerWidth >= 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
-  // ── Lock body scroll when mobile menu is open ─
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
+    document.documentElement.style.overflow = menuOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, [menuOpen]);
+
+  const isActive = (href) => location.pathname === href;
 
   return (
     <>
       {/* ── NAV BAR ──────────────────────────── */}
       <nav
-        className={`
-     fixed top-0 left-0 right-0 z-50
-     h-[68px] lg:w-full w-screen
-     flex items-center justify-between
-     transition-all duration-300
-     ${isScrolled ? "bg-[#2F8AC9]/95 backdrop-blur-xl border-b border-white/[0.07]" : "bg-[#2F8AC9]/80 backdrop-blur-md"}
-    `}
-        style={{ paddingLeft: "8px", paddingRight: "8px" }}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          height: "68px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 clamp(16px, 4vw, 40px)",
+          background: scrolled
+            ? "rgba(47,138,201,0.98)"
+            : "rgba(47,138,201,0.92)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          borderBottom: scrolled
+            ? "1px solid rgba(255,255,255,0.12)"
+            : "1px solid transparent",
+          transition: "all 0.3s ease",
+          boxShadow: scrolled ? "0 4px 24px rgba(15,30,53,0.25)" : "none",
+          boxSizing: "border-box",
+          // Critical — prevent nav from being wider than viewport
+          maxWidth: "100vw",
+          overflowX: "hidden",
+        }}
       >
         {/* ── LOGO ─────────────────────────── */}
-        <a
-          href="/"
-          className="flex flex-row items-center gap-[2px] no-underline"
+        <Link
+          to="/"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            textDecoration: "none",
+            flexShrink: 0,
+            minWidth: 0,
+          }}
         >
-          <img src="/flux_logo.jpeg" alt="logo" className="w-10 h-10 rounded" />
-          <div className="flex flex-col">
+          <img
+            src="/flux_logo.jpeg"
+            alt="Flux Aid Logo"
+            style={{
+              width: "38px",
+              height: "38px",
+              borderRadius: "8px",
+              objectFit: "cover",
+              border: "1px solid rgba(255,255,255,0.2)",
+              flexShrink: 0,
+            }}
+          />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "1px",
+              minWidth: 0,
+            }}
+          >
             <span
-              className="
-      font-condensed font-bold uppercase
-      text-[15px] tracking-[4px] text-flux-white
-      leading-none
-     "
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "13px",
+                fontWeight: 700,
+                letterSpacing: "2.5px",
+                textTransform: "uppercase",
+                color: "#FFFFFF",
+                lineHeight: 1,
+                whiteSpace: "nowrap",
+              }}
             >
               {ORG_NAME}
             </span>
             <span
-              className="
-      font-body font-normal
-      text-[9px] tracking-[2.5px] uppercase text-flux-white
-      leading-none
-     "
+              style={{
+                fontFamily: "'Barlow', sans-serif",
+                fontSize: "8px",
+                fontWeight: 400,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.6)",
+                lineHeight: 1,
+                whiteSpace: "nowrap",
+              }}
             >
               {ORG_TAGLINE}
             </span>
           </div>
-        </a>
+        </Link>
 
-        {/* ── DESKTOP NAV LINKS ────────────── */}
-        <div className="hidden lg:flex items-center gap-9">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              style={{ color: "white" }}
-              className="
- font-condensed uppercase
- text-[12px] tracking-[1.5px]
- transition-colors duration-200 no-underline
- text-white hover:text-white/80"
-            >
-              {link.label}
-            </a>
-          ))}
-        </div>
-
-        {/* ── DESKTOP RIGHT CTAs ───────────── */}
-        <div className="hidden lg:flex items-center gap-5">
-          <a
-            href="/volunteer"
-            className="
-       font-condensed font-semibold uppercase
-       text-[11px] tracking-[2px] text-white
-       border-b border-flux-gray pb-[1px]
-       hover:text-flux-silver hover:border-flux-silver
-       transition-colors duration-200 no-underline
-      "
-            style={{ color: "white" }}
-          >
-            Volunteer
-          </a>
-          <Button
-            href="/donate"
-            variant="primary"
-            style={{ padding: "8px 10px" }}
-          >
-            Donate Now
-          </Button>
-        </div>
-
-        {/* ── MOBILE RIGHT ─────────────────── */}
-        <div className="flex lg:hidden items-center gap-3">
-          <Button
-            href="/donate"
-            variant="primary"
-            className="text-[10px] px-8 py-4"
-            style={{ padding: "8px 10px" }}
-          >
-            Donate
-          </Button>
-
-          {/* Hamburger */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="flex flex-col gap-[5px] p-1 cursor-pointer bg-transparent border-0"
-            aria-label="Toggle menu"
-          >
-            <span
-              className={`
-       block w-[22px] h-[1.5px] bg-white
-       transition-all duration-300 origin-center
-       ${menuOpen ? "rotate-45 translate-y-[6.5px]" : ""}
-      `}
-            />
-            <span
-              className={`
-       block h-[1.5px] bg-white
-       transition-all duration-300
-       ${menuOpen ? "opacity-0 w-[22px]" : "w-[22px]"}
-      `}
-            />
-            <span
-              className={`
-       block h-[1.5px] bg-flux-white
-       transition-all duration-300 origin-center
-       ${menuOpen ? "-rotate-45 -translate-y-[6.5px] w-[22px]" : "w-[14px]"}
-      `}
-            />
-          </button>
-        </div>
-      </nav>
-
-      {/* ── MOBILE MENU OVERLAY ──────────────── */}
-      <div
-        className={`
-     fixed inset-0 z-40 bg-flux-black w-screen
-     flex flex-col
-     transition-all duration-300 ease-in-out
-     lg:hidden
-     ${
-       menuOpen
-         ? "opacity-100 pointer-events-auto"
-         : "opacity-0 pointer-events-none"
-     }
-    `}
-      >
-        {/* Top spacer for nav height */}
-        <div className="h-[68px] flex-shrink-0" />
-
-        {/* Menu content */}
-        <div className="flex-1 flex flex-col gap-4 px-6 py-10 overflow-y-auto">
-          {/* Links */}
-          <div className="flex flex-col gap-0">
-            {NAV_LINKS.map((link, i) => (
-              <a
+        {/* ── DESKTOP LINKS ────────────────── */}
+        {isDesktop && (
+          <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
+            {NAV_LINKS.map((link) => (
+              <Link
                 key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className={`
-         flex items-center justify-between
-         font-display font-bold
-         text-[32px] leading-[1.1] tracking-[-0.5px]
-         text-flux-white no-underline
-         py-5 border-b border-white/[0.07]
-         hover:text-flux-accent
-         transition-colors duration-200
-         ${menuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
-        `}
+                to={link.href}
                 style={{
-                  transitionDelay: menuOpen ? `${i * 50}ms` : "0ms",
-                  transition: `color 200ms, opacity 300ms ${i * 50}ms, transform 300ms ${i * 50}ms`,
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  letterSpacing: "1.5px",
+                  textTransform: "uppercase",
+                  color: isActive(link.href)
+                    ? "#FFFFFF"
+                    : "rgba(255,255,255,0.75)",
+                  textDecoration: "none",
+                  borderBottom: isActive(link.href)
+                    ? "1px solid rgba(255,255,255,0.7)"
+                    : "1px solid transparent",
+                  paddingBottom: "2px",
+                  transition: "all 0.2s",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {link.label}
-                <span className="text-flux-silver font-normal text-[20px]">
-                  →
-                </span>
-              </a>
+              </Link>
             ))}
           </div>
+        )}
 
-          {/* Bottom CTAs */}
-          <div className="flex flex-col gap-3 pt-8">
-            <Button
-              href="/donate"
-              variant="primary"
-              className="w-full justify-center py-4"
-            >
-              Donate Now
-            </Button>
-            <Button
-              href="/volunteer"
-              variant="ghost"
-              className="w-full justify-center py-4"
+        {/* ── DESKTOP CTAs ─────────────────── */}
+        {isDesktop && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "16px",
+              flexShrink: 0,
+            }}
+          >
+            <Link
+              to="/volunteer"
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "11px",
+                fontWeight: 600,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.85)",
+                textDecoration: "none",
+                borderBottom: "1px solid rgba(255,255,255,0.35)",
+                paddingBottom: "1px",
+                whiteSpace: "nowrap",
+              }}
             >
               Volunteer
-            </Button>
+            </Link>
+            <Link
+              to="/donate"
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                color: "#2F8AC9",
+                background: "#FFFFFF",
+                padding: "10px 22px",
+                borderRadius: "4px",
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+              }}
+            >
+              Donate Now
+            </Link>
+          </div>
+        )}
+
+        {/* ── MOBILE RIGHT ─────────────────── */}
+        {!isDesktop && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              flexShrink: 0,
+            }}
+          >
+            <Link
+              to="/donate"
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "10px",
+                fontWeight: 700,
+                letterSpacing: "1.5px",
+                textTransform: "uppercase",
+                color: "#2F8AC9",
+                background: "#FFFFFF",
+                padding: "8px 16px",
+                borderRadius: "4px",
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Donate
+            </Link>
+
+            {/* Hamburger button */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle menu"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                gap: "5px",
+                padding: "8px",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                flexShrink: 0,
+                width: "36px",
+                height: "36px",
+              }}
+            >
+              <span
+                style={{
+                  display: "block",
+                  width: "20px",
+                  height: "1.5px",
+                  background: "#FFFFFF",
+                  borderRadius: "2px",
+                  transition: "all 0.3s ease",
+                  transformOrigin: "center",
+                  transform: menuOpen
+                    ? "rotate(45deg) translateY(6.5px)"
+                    : "none",
+                }}
+              />
+              <span
+                style={{
+                  display: "block",
+                  width: "20px",
+                  height: "1.5px",
+                  background: "#FFFFFF",
+                  borderRadius: "2px",
+                  transition: "all 0.3s ease",
+                  opacity: menuOpen ? 0 : 1,
+                }}
+              />
+              <span
+                style={{
+                  display: "block",
+                  width: menuOpen ? "20px" : "13px",
+                  height: "1.5px",
+                  background: "#FFFFFF",
+                  borderRadius: "2px",
+                  transition: "all 0.3s ease",
+                  transformOrigin: "center",
+                  transform: menuOpen
+                    ? "rotate(-45deg) translateY(-6.5px)"
+                    : "none",
+                }}
+              />
+            </button>
+          </div>
+        )}
+      </nav>
+
+      {/* ── MOBILE MENU OVERLAY ──────────────── */}
+      {!isDesktop && (
+        <div
+          style={{
+            position: "fixed",
+            // Explicitly set all four sides
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            // Never wider than the screen
+            width: "100%",
+            maxWidth: "100vw",
+            zIndex: 40,
+            background: "#0F1E35",
+            display: "flex",
+            flexDirection: "column",
+            overflowX: "hidden",
+            overflowY: "auto",
+            boxSizing: "border-box",
+            transition: "opacity 0.3s ease, transform 0.3s ease",
+            opacity: menuOpen ? 1 : 0,
+            transform: menuOpen ? "translateX(0)" : "translateX(100%)",
+            pointerEvents: menuOpen ? "auto" : "none",
+          }}
+        >
+          {/* Background decoration */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage:
+                "linear-gradient(rgba(47,138,201,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(47,138,201,0.05) 1px, transparent 1px)",
+              backgroundSize: "40px 40px",
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: "80px",
+              right: "-60px",
+              width: "280px",
+              height: "280px",
+              background:
+                "radial-gradient(circle, rgba(108,96,158,0.18) 0%, transparent 65%)",
+              borderRadius: "50%",
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              bottom: "100px",
+              left: "-60px",
+              width: "240px",
+              height: "240px",
+              background:
+                "radial-gradient(circle, rgba(47,138,201,0.12) 0%, transparent 65%)",
+              borderRadius: "50%",
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          />
+
+          {/* Spacer for nav height */}
+          <div style={{ height: "68px", flexShrink: 0 }} />
+
+          {/* Menu content */}
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              padding: "32px 28px 0",
+              position: "relative",
+              zIndex: 1,
+              boxSizing: "border-box",
+              width: "100%",
+            }}
+          >
+            {/* Nav links */}
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {NAV_LINKS.map((link, i) => (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "clamp(26px, 7vw, 40px)",
+                    fontWeight: 700,
+                    lineHeight: 1.1,
+                    letterSpacing: "-0.5px",
+                    color: isActive(link.href) ? "#2F8AC9" : "#F0F6FF",
+                    textDecoration: "none",
+                    padding: "16px 0",
+                    borderBottom: "1px solid rgba(255,255,255,0.07)",
+                    opacity: menuOpen ? 1 : 0,
+                    transform: menuOpen ? "translateY(0)" : "translateY(12px)",
+                    transition: `color 0.2s, opacity 0.35s ${i * 50}ms ease, transform 0.35s ${i * 50}ms ease`,
+                    boxSizing: "border-box",
+                  }}
+                >
+                  <span>{link.label}</span>
+                  <span
+                    style={{
+                      fontSize: "20px",
+                      color: isActive(link.href)
+                        ? "#2F8AC9"
+                        : "rgba(200,214,232,0.3)",
+                      fontFamily: "'Barlow', sans-serif",
+                      fontWeight: 300,
+                      flexShrink: 0,
+                    }}
+                  >
+                    →
+                  </span>
+                </Link>
+              ))}
+            </div>
+
+            {/* CTA buttons */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+                paddingTop: "28px",
+                paddingBottom: "32px",
+                opacity: menuOpen ? 1 : 0,
+                transform: menuOpen ? "translateY(0)" : "translateY(12px)",
+                transition: `opacity 0.35s ${NAV_LINKS.length * 50 + 60}ms ease, transform 0.35s ${NAV_LINKS.length * 50 + 60}ms ease`,
+                boxSizing: "border-box",
+                width: "100%",
+              }}
+            >
+              <Link
+                to="/donate"
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  display: "block",
+                  textAlign: "center",
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  letterSpacing: "2.5px",
+                  textTransform: "uppercase",
+                  color: "#2F8AC9",
+                  background: "#FFFFFF",
+                  padding: "16px",
+                  borderRadius: "8px",
+                  textDecoration: "none",
+                  boxSizing: "border-box",
+                  width: "100%",
+                }}
+              >
+                Donate Now
+              </Link>
+              <Link
+                to="/volunteer"
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  display: "block",
+                  textAlign: "center",
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  letterSpacing: "2.5px",
+                  textTransform: "uppercase",
+                  color: "rgba(255,255,255,0.8)",
+                  background: "transparent",
+                  padding: "15px",
+                  borderRadius: "8px",
+                  textDecoration: "none",
+                  border: "1.5px solid rgba(255,255,255,0.2)",
+                  boxSizing: "border-box",
+                  width: "100%",
+                }}
+              >
+                Volunteer
+              </Link>
+            </div>
+          </div>
+
+          {/* Footer strip */}
+          <div
+            style={{
+              borderTop: "1px solid rgba(255,255,255,0.07)",
+              padding: "14px 28px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              position: "relative",
+              zIndex: 1,
+              boxSizing: "border-box",
+              width: "100%",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "13px",
+                fontStyle: "italic",
+                color: "rgba(200,214,232,0.35)",
+              }}
+            >
+              Change Unstoppable
+            </span>
+            <span
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "9px",
+                fontWeight: 600,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                color: "rgba(200,214,232,0.2)",
+              }}
+            >
+              fluxaid.org
+            </span>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* ── SPACER — pushes page content below fixed nav ── */}
-      <div className="h-[68px]" />
+      {/* ── PAGE SPACER ──────────────────────── */}
+      <div style={{ height: "68px" }} />
     </>
   );
 };

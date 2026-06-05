@@ -1,6 +1,6 @@
 // pages/Contact.jsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ORG_NAME, CONTACT } from "../constants";
 
 const ENQUIRY_TYPES = [
@@ -15,6 +15,7 @@ const ENQUIRY_TYPES = [
 ];
 
 const Contact = () => {
+  const [isMobile, setIsMobile] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -26,11 +27,17 @@ const Contact = () => {
   });
   const [submitted, setSubmitted] = useState(false);
 
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Contact form:", form);
     setSubmitted(true);
   };
 
@@ -65,8 +72,9 @@ const Contact = () => {
       <section
         style={{
           background: "#0F1E35",
-          padding:
-            "clamp(64px,10vw,100px) clamp(20px,5vw,80px) clamp(56px,7vw,80px)",
+          padding: isMobile
+            ? "60px 24px 52px"
+            : "clamp(64px,10vw,100px) clamp(20px,5vw,80px) clamp(56px,7vw,80px)",
           position: "relative",
           overflow: "hidden",
         }}
@@ -86,8 +94,8 @@ const Contact = () => {
             position: "absolute",
             top: "-80px",
             right: "-80px",
-            width: "360px",
-            height: "360px",
+            width: isMobile ? "220px" : "360px",
+            height: isMobile ? "220px" : "360px",
             background:
               "radial-gradient(circle, rgba(108,96,158,0.22) 0%, transparent 65%)",
             borderRadius: "50%",
@@ -98,7 +106,7 @@ const Contact = () => {
           style={{
             position: "absolute",
             bottom: "-60px",
-            left: "200px",
+            left: isMobile ? "-40px" : "200px",
             width: "280px",
             height: "280px",
             background:
@@ -142,7 +150,9 @@ const Contact = () => {
           <h1
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "clamp(48px,8vw,84px)",
+              fontSize: isMobile
+                ? "clamp(44px,14vw,64px)"
+                : "clamp(48px,8vw,84px)",
               fontWeight: 700,
               lineHeight: 0.95,
               letterSpacing: "-2px",
@@ -160,7 +170,7 @@ const Contact = () => {
           <p
             style={{
               fontFamily: "'Barlow', sans-serif",
-              fontSize: "15px",
+              fontSize: isMobile ? "14px" : "15px",
               fontWeight: 300,
               lineHeight: 1.8,
               color: "rgba(200,214,232,0.6)",
@@ -191,14 +201,23 @@ const Contact = () => {
       </div>
 
       {/* ── MAIN ─────────────────────────────── */}
-      <section style={{ padding: "clamp(40px,6vw,72px) clamp(20px,5vw,80px)" }}>
+      <section
+        style={{
+          padding: isMobile
+            ? "36px 20px 60px"
+            : "clamp(40px,6vw,72px) clamp(20px,5vw,80px)",
+        }}
+      >
         <div
           style={{
             maxWidth: "1200px",
             margin: "0 auto",
             display: "grid",
-            gridTemplateColumns: "1fr clamp(280px,28vw,380px)",
-            gap: "clamp(32px,5vw,64px)",
+            // Single column on mobile, two columns on desktop
+            gridTemplateColumns: isMobile
+              ? "1fr"
+              : "1fr clamp(280px,28vw,360px)",
+            gap: isMobile ? "28px" : "clamp(32px,5vw,64px)",
             alignItems: "start",
           }}
         >
@@ -209,13 +228,13 @@ const Contact = () => {
                 background: "#FFFFFF",
                 border: "1px solid #E5E7EB",
                 borderRadius: "20px",
-                padding: "64px 48px",
+                padding: isMobile ? "48px 28px" : "64px 48px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
                 textAlign: "center",
-                minHeight: "400px",
+                minHeight: "360px",
                 gap: "20px",
                 borderTop: "3px solid #2F8AC9",
               }}
@@ -270,13 +289,12 @@ const Contact = () => {
                 background: "#FFFFFF",
                 border: "1px solid #E5E7EB",
                 borderRadius: "20px",
-                padding: "clamp(24px,4vw,44px)",
+                padding: isMobile ? "28px 20px" : "clamp(24px,4vw,44px)",
                 boxShadow: "0 4px 24px rgba(0,0,0,0.05)",
                 position: "relative",
                 overflow: "hidden",
               }}
             >
-              {/* Top accent */}
               <div
                 style={{
                   position: "absolute",
@@ -292,7 +310,7 @@ const Contact = () => {
               <h2
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "clamp(28px,3vw,36px)",
+                  fontSize: "clamp(24px,3vw,32px)",
                   fontWeight: 700,
                   color: "#0D1117",
                   marginBottom: "6px",
@@ -306,7 +324,7 @@ const Contact = () => {
                   fontSize: "13px",
                   fontWeight: 300,
                   color: "#9CA3AF",
-                  marginBottom: "28px",
+                  marginBottom: "24px",
                 }}
               >
                 Fill in the form below and we'll get back to you.
@@ -319,10 +337,11 @@ const Contact = () => {
                   gap: "14px",
                 }}
               >
+                {/* Name row — stacks on mobile */}
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
+                    gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                     gap: "12px",
                   }}
                 >
@@ -355,10 +374,12 @@ const Contact = () => {
                     />
                   </div>
                 </div>
+
+                {/* Email + Phone — stacks on mobile */}
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
+                    gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                     gap: "12px",
                   }}
                 >
@@ -390,6 +411,7 @@ const Contact = () => {
                     />
                   </div>
                 </div>
+
                 <div>
                   <label style={lbl}>Organisation</label>
                   <input
@@ -403,6 +425,7 @@ const Contact = () => {
                     onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
                   />
                 </div>
+
                 <div>
                   <label style={lbl}>Enquiry Type *</label>
                   <select
@@ -424,6 +447,7 @@ const Contact = () => {
                     ))}
                   </select>
                 </div>
+
                 <div>
                   <label style={lbl}>Message *</label>
                   <textarea
@@ -438,6 +462,7 @@ const Contact = () => {
                     onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
                   />
                 </div>
+
                 <button
                   type="submit"
                   style={{
@@ -453,7 +478,7 @@ const Contact = () => {
                     letterSpacing: "2.5px",
                     textTransform: "uppercase",
                     cursor: "pointer",
-                    marginTop: "6px",
+                    marginTop: "4px",
                   }}
                 >
                   Send Message →
@@ -474,13 +499,14 @@ const Contact = () => {
           )}
 
           {/* ── SIDEBAR ──────────────────────── */}
+          {/* On mobile: sidebar appears BELOW the form, no sticky */}
           <div
             style={{
               display: "flex",
               flexDirection: "column",
               gap: "12px",
-              position: "sticky",
-              top: "100px",
+              position: isMobile ? "relative" : "sticky",
+              top: isMobile ? "unset" : "100px",
             }}
           >
             {/* Abuja */}
@@ -496,6 +522,17 @@ const Contact = () => {
               <div
                 style={{
                   position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "2px",
+                  background: "linear-gradient(90deg, #2F8AC9, transparent)",
+                  borderRadius: "14px 14px 0 0",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
                   top: "-20px",
                   right: "-20px",
                   width: "100px",
@@ -504,17 +541,6 @@ const Contact = () => {
                     "radial-gradient(circle, rgba(47,138,201,0.2) 0%, transparent 70%)",
                   borderRadius: "50%",
                   pointerEvents: "none",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: "2px",
-                  background: "linear-gradient(90deg, #2F8AC9, transparent)",
-                  borderRadius: "14px 14px 0 0",
                 }}
               />
               <h5
@@ -656,123 +682,141 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* Email */}
+            {/* Email + Social — side by side on mobile */}
             <div
               style={{
-                background: "#FFFFFF",
-                border: "1px solid #E5E7EB",
-                borderRadius: "14px",
-                padding: "22px 24px",
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr",
+                gap: "12px",
               }}
             >
-              <h5
+              {/* Email */}
+              <div
                 style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: "9px",
-                  fontWeight: 700,
-                  letterSpacing: "3px",
-                  textTransform: "uppercase",
-                  color: "#9CA3AF",
-                  marginBottom: "12px",
+                  background: "#FFFFFF",
+                  border: "1px solid #E5E7EB",
+                  borderRadius: "14px",
+                  padding: "20px 18px",
                 }}
               >
-                Email Us
-              </h5>
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: "6px" }}
-              >
-                {[CONTACT.email1, CONTACT.email2].map((e) => (
-                  <a
-                    key={e}
-                    href={`mailto:${e}`}
-                    style={{
-                      fontFamily: "'Barlow', sans-serif",
-                      fontSize: "12px",
-                      fontWeight: 300,
-                      color: "#2F8AC9",
-                      textDecoration: "none",
-                      wordBreak: "break-all",
-                    }}
-                  >
-                    {e}
-                  </a>
-                ))}
+                <h5
+                  style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: "9px",
+                    fontWeight: 700,
+                    letterSpacing: "3px",
+                    textTransform: "uppercase",
+                    color: "#9CA3AF",
+                    marginBottom: "12px",
+                  }}
+                >
+                  Email Us
+                </h5>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "6px",
+                  }}
+                >
+                  {[CONTACT.email1, CONTACT.email2].map((e) => (
+                    <a
+                      key={e}
+                      href={`mailto:${e}`}
+                      style={{
+                        fontFamily: "'Barlow', sans-serif",
+                        fontSize: isMobile ? "11px" : "12px",
+                        fontWeight: 300,
+                        color: "#2F8AC9",
+                        textDecoration: "none",
+                        wordBreak: "break-all",
+                      }}
+                    >
+                      {e}
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Social */}
-            <div
-              style={{
-                background: "#FFFFFF",
-                border: "1px solid #E5E7EB",
-                borderRadius: "14px",
-                padding: "22px 24px",
-              }}
-            >
-              <h5
-                style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: "9px",
-                  fontWeight: 700,
-                  letterSpacing: "3px",
-                  textTransform: "uppercase",
-                  color: "#9CA3AF",
-                  marginBottom: "14px",
-                }}
-              >
-                Follow Us
-              </h5>
+              {/* Social */}
               <div
-                style={{ display: "flex", gap: "8px", marginBottom: "10px" }}
-              >
-                {[
-                  { l: "𝕏", h: "#" },
-                  { l: "in", h: "#" },
-                  { l: "IG", h: "#" },
-                  { l: "YT", h: "#" },
-                ].map((s) => (
-                  <a
-                    key={s.l}
-                    href={s.h}
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "1.5px solid #E5E7EB",
-                      borderRadius: "6px",
-                      fontFamily: "'Barlow Condensed', sans-serif",
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      color: "#6B7280",
-                      textDecoration: "none",
-                      transition: "all 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "#2F8AC9";
-                      e.currentTarget.style.color = "#2F8AC9";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "#E5E7EB";
-                      e.currentTarget.style.color = "#6B7280";
-                    }}
-                  >
-                    {s.l}
-                  </a>
-                ))}
-              </div>
-              <p
                 style={{
-                  fontFamily: "'Barlow', sans-serif",
-                  fontSize: "11px",
-                  fontWeight: 300,
-                  color: "#9CA3AF",
-                  margin: 0,
+                  background: "#FFFFFF",
+                  border: "1px solid #E5E7EB",
+                  borderRadius: "14px",
+                  padding: "20px 18px",
                 }}
               >
-                {CONTACT.social}
-              </p>
+                <h5
+                  style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: "9px",
+                    fontWeight: 700,
+                    letterSpacing: "3px",
+                    textTransform: "uppercase",
+                    color: "#9CA3AF",
+                    marginBottom: "12px",
+                  }}
+                >
+                  Follow Us
+                </h5>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "6px",
+                    flexWrap: "wrap",
+                    marginBottom: "8px",
+                  }}
+                >
+                  {[
+                    { l: "𝕏", h: "#" },
+                    { l: "in", h: "#" },
+                    { l: "IG", h: "#" },
+                    { l: "YT", h: "#" },
+                  ].map((s) => (
+                    <a
+                      key={s.l}
+                      href={s.h}
+                      style={{
+                        width: "34px",
+                        height: "34px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "1.5px solid #E5E7EB",
+                        borderRadius: "6px",
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        color: "#6B7280",
+                        textDecoration: "none",
+                        transition: "all 0.2s",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "#2F8AC9";
+                        e.currentTarget.style.color = "#2F8AC9";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "#E5E7EB";
+                        e.currentTarget.style.color = "#6B7280";
+                      }}
+                    >
+                      {s.l}
+                    </a>
+                  ))}
+                </div>
+                <p
+                  style={{
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: "11px",
+                    fontWeight: 300,
+                    color: "#9CA3AF",
+                    margin: 0,
+                  }}
+                >
+                  {CONTACT.social}
+                </p>
+              </div>
             </div>
 
             {/* Response time */}

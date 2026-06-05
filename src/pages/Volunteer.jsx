@@ -1,6 +1,6 @@
 // pages/Volunteer.jsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ORG_NAME } from "../constants";
 
 const ROLES = [
@@ -76,6 +76,7 @@ const PROCESS = [
 ];
 
 const Volunteer = () => {
+  const [isMobile, setIsMobile] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -90,11 +91,17 @@ const Volunteer = () => {
   });
   const [submitted, setSubmitted] = useState(false);
 
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Volunteer:", form);
     setSubmitted(true);
   };
 
@@ -129,8 +136,9 @@ const Volunteer = () => {
       <section
         style={{
           background: "#0F1E35",
-          padding:
-            "clamp(64px,10vw,100px) clamp(20px,5vw,80px) clamp(56px,7vw,80px)",
+          padding: isMobile
+            ? "60px 24px 52px"
+            : "clamp(64px,10vw,100px) clamp(20px,5vw,80px) clamp(56px,7vw,80px)",
           position: "relative",
           overflow: "hidden",
         }}
@@ -150,8 +158,8 @@ const Volunteer = () => {
             position: "absolute",
             top: "-100px",
             right: "-80px",
-            width: "420px",
-            height: "420px",
+            width: isMobile ? "220px" : "420px",
+            height: isMobile ? "220px" : "420px",
             background:
               "radial-gradient(circle, rgba(108,96,158,0.22) 0%, transparent 65%)",
             borderRadius: "50%",
@@ -162,7 +170,7 @@ const Volunteer = () => {
           style={{
             position: "absolute",
             bottom: "-60px",
-            left: "200px",
+            left: isMobile ? "-40px" : "200px",
             width: "300px",
             height: "300px",
             background:
@@ -172,23 +180,24 @@ const Volunteer = () => {
           }}
         />
 
-        {/* Africa watermark */}
-        <svg
-          style={{
-            position: "absolute",
-            top: "50%",
-            right: "80px",
-            transform: "translateY(-50%)",
-            width: "340px",
-            opacity: 0.04,
-            pointerEvents: "none",
-          }}
-          viewBox="0 0 400 500"
-          fill="white"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M200 15 C240 15 290 35 330 80 C370 125 380 185 365 240 C350 295 320 335 300 375 C280 415 265 455 240 480 C220 498 200 498 180 490 C160 482 140 460 120 430 C100 400 85 365 65 325 C45 285 20 240 18 190 C16 140 35 90 75 55 C115 20 160 15 200 15Z" />
-        </svg>
+        {/* Africa watermark — hide on mobile */}
+        {!isMobile && (
+          <svg
+            style={{
+              position: "absolute",
+              top: "50%",
+              right: "80px",
+              transform: "translateY(-50%)",
+              width: "340px",
+              opacity: 0.04,
+              pointerEvents: "none",
+            }}
+            viewBox="0 0 400 500"
+            fill="white"
+          >
+            <path d="M200 15 C240 15 290 35 330 80 C370 125 380 185 365 240 C350 295 320 335 300 375 C280 415 265 455 240 480 C220 498 200 498 180 490 C160 482 140 460 120 430 C100 400 85 365 65 325 C45 285 20 240 18 190 C16 140 35 90 75 55 C115 20 160 15 200 15Z" />
+          </svg>
+        )}
 
         <div style={{ maxWidth: "700px", position: "relative", zIndex: 1 }}>
           <div
@@ -221,16 +230,17 @@ const Volunteer = () => {
               Get Involved
             </span>
           </div>
-
           <h1
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "clamp(48px,8vw,88px)",
+              fontSize: isMobile
+                ? "clamp(44px,14vw,64px)"
+                : "clamp(48px,8vw,88px)",
               fontWeight: 700,
               lineHeight: 0.95,
               letterSpacing: "-2px",
               color: "#F0F6FF",
-              marginBottom: "22px",
+              marginBottom: "20px",
             }}
           >
             Give your
@@ -242,24 +252,29 @@ const Volunteer = () => {
             </em>{" "}
             to Africa
           </h1>
-
           <p
             style={{
               fontFamily: "'Barlow', sans-serif",
-              fontSize: "15px",
+              fontSize: isMobile ? "14px" : "15px",
               fontWeight: 300,
               lineHeight: 1.85,
               color: "rgba(200,214,232,0.6)",
               maxWidth: "520px",
-              marginBottom: "36px",
+              marginBottom: "32px",
             }}
           >
             Volunteering with {ORG_NAME} means going where it matters — into
             communities, clinics, classrooms, and fields across Nigeria and
-            Africa. We need people who are ready to show up.
+            Africa.
           </p>
-
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "12px",
+              flexWrap: "wrap",
+              flexDirection: isMobile ? "column" : "row",
+            }}
+          >
             <a
               href="#apply"
               style={{
@@ -273,6 +288,7 @@ const Volunteer = () => {
                 padding: "14px 32px",
                 borderRadius: "4px",
                 textDecoration: "none",
+                textAlign: "center",
               }}
             >
               Apply Now
@@ -291,6 +307,7 @@ const Volunteer = () => {
                 border: "1px solid rgba(200,214,232,0.2)",
                 borderRadius: "4px",
                 textDecoration: "none",
+                textAlign: "center",
               }}
             >
               See Roles
@@ -318,7 +335,9 @@ const Volunteer = () => {
       <section
         style={{
           background: "#FFFFFF",
-          padding: "clamp(40px,6vw,72px) clamp(20px,5vw,80px)",
+          padding: isMobile
+            ? "48px 24px"
+            : "clamp(40px,6vw,72px) clamp(20px,5vw,80px)",
           borderBottom: "1px solid #E5E7EB",
         }}
       >
@@ -327,8 +346,10 @@ const Volunteer = () => {
             maxWidth: "1200px",
             margin: "0 auto",
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "clamp(32px,5vw,60px)",
+            gridTemplateColumns: isMobile
+              ? "1fr"
+              : "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: isMobile ? "28px" : "clamp(32px,5vw,60px)",
             alignItems: "center",
           }}
         >
@@ -371,7 +392,7 @@ const Volunteer = () => {
                 lineHeight: 1.05,
                 letterSpacing: "-0.5px",
                 color: "#0D1117",
-                marginBottom: "20px",
+                marginBottom: "18px",
               }}
             >
               Wear the{" "}
@@ -390,22 +411,20 @@ const Volunteer = () => {
             <p
               style={{
                 fontFamily: "'Barlow', sans-serif",
-                fontSize: "15px",
+                fontSize: isMobile ? "14px" : "15px",
                 fontWeight: 300,
                 lineHeight: 1.85,
                 color: "#6B7280",
-                marginBottom: "16px",
+                marginBottom: "14px",
               }}
             >
               Every {ORG_NAME} volunteer receives our official field shirt on
               onboarding. It is more than branding — it is a commitment.
-              Communities know who we are because they can see us. That
-              visibility comes with responsibility.
             </p>
             <p
               style={{
                 fontFamily: "'Barlow', sans-serif",
-                fontSize: "15px",
+                fontSize: isMobile ? "14px" : "15px",
                 fontWeight: 300,
                 lineHeight: 1.85,
                 color: "#6B7280",
@@ -421,7 +440,7 @@ const Volunteer = () => {
           <div
             style={{
               width: "100%",
-              minHeight: "300px",
+              minHeight: isMobile ? "220px" : "300px",
               background: "#0F1E35",
               borderRadius: "20px",
               display: "flex",
@@ -442,51 +461,20 @@ const Volunteer = () => {
                 pointerEvents: "none",
               }}
             />
-            <div
-              style={{
-                position: "absolute",
-                top: "-40px",
-                right: "-40px",
-                width: "180px",
-                height: "180px",
-                background:
-                  "radial-gradient(circle, rgba(108,96,158,0.2) 0%, transparent 70%)",
-                borderRadius: "50%",
-                pointerEvents: "none",
-              }}
-            />
-            {/* ── SHIRT PHOTO ────────────────── */}
-
             <img
               src="/flux_shirt.jpeg"
               alt="Flux Aid volunteer shirt"
-              style={{ width: "100%", height: "100%", objectFit: "contain" }}
-            />
-            {/* <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "12px",
-                opacity: 0.2,
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
                 position: "relative",
                 zIndex: 1,
               }}
-            >
-              <span style={{ fontSize: "72px" }}>👕</span>
-              <span
-                style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: "9px",
-                  fontWeight: 600,
-                  letterSpacing: "2px",
-                  textTransform: "uppercase",
-                  color: "#9CA3AF",
-                }}
-              >
-                Volunteer shirt photo here
-              </span> 
-            </div>*/}
+              onError={(e) => {
+                e.target.style.display = "none";
+              }}
+            />
           </div>
         </div>
       </section>
@@ -496,7 +484,9 @@ const Volunteer = () => {
         id="roles"
         style={{
           background: "#F8F9FB",
-          padding: "clamp(48px,7vw,80px) clamp(20px,5vw,80px)",
+          padding: isMobile
+            ? "48px 24px"
+            : "clamp(48px,7vw,80px) clamp(20px,5vw,80px)",
           borderBottom: "1px solid #E5E7EB",
         }}
       >
@@ -539,7 +529,7 @@ const Volunteer = () => {
               lineHeight: 1.05,
               letterSpacing: "-0.5px",
               color: "#0D1117",
-              marginBottom: "40px",
+              marginBottom: "36px",
             }}
           >
             Volunteer{" "}
@@ -553,7 +543,9 @@ const Volunteer = () => {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gridTemplateColumns: isMobile
+                ? "1fr"
+                : "repeat(auto-fit, minmax(280px, 1fr))",
               gap: "16px",
             }}
           >
@@ -563,7 +555,7 @@ const Volunteer = () => {
                 style={{
                   background: i % 3 === 1 ? "#0F1E35" : "#FFFFFF",
                   borderRadius: "16px",
-                  padding: "32px 28px",
+                  padding: isMobile ? "24px 20px" : "32px 28px",
                   display: "flex",
                   flexDirection: "column",
                   gap: "14px",
@@ -576,13 +568,13 @@ const Volunteer = () => {
                   transition: "transform 0.22s ease",
                 }}
                 onMouseEnter={(e) =>
+                  !isMobile &&
                   (e.currentTarget.style.transform = "translateY(-4px)")
                 }
                 onMouseLeave={(e) =>
                   (e.currentTarget.style.transform = "translateY(0)")
                 }
               >
-                {/* Top accent */}
                 <div
                   style={{
                     position: "absolute",
@@ -594,8 +586,6 @@ const Volunteer = () => {
                     borderRadius: "16px 16px 0 0",
                   }}
                 />
-
-                {/* Glow on dark */}
                 {i % 3 === 1 && (
                   <div
                     style={{
@@ -611,29 +601,27 @@ const Volunteer = () => {
                   />
                 )}
 
-                {/* Icon box */}
                 <div
                   style={{
-                    width: "52px",
-                    height: "52px",
+                    width: "48px",
+                    height: "48px",
                     borderRadius: "12px",
                     background: `${role.color}15`,
                     border: `1px solid ${role.color}30`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "24px",
+                    fontSize: "22px",
                     flexShrink: 0,
                   }}
                 >
                   {role.icon}
                 </div>
-
                 <div style={{ flex: 1 }}>
                   <h4
                     style={{
                       fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: "clamp(18px,2vw,21px)",
+                      fontSize: "clamp(17px,2vw,21px)",
                       fontWeight: 700,
                       color: i % 3 === 1 ? "#F0F6FF" : "#0D1117",
                       lineHeight: 1.2,
@@ -655,8 +643,6 @@ const Volunteer = () => {
                     {role.desc}
                   </p>
                 </div>
-
-                {/* Skills */}
                 <div
                   style={{
                     display: "flex",
@@ -696,7 +682,9 @@ const Volunteer = () => {
       <section
         style={{
           background: "#FFFFFF",
-          padding: "clamp(48px,7vw,80px) clamp(20px,5vw,80px)",
+          padding: isMobile
+            ? "48px 24px"
+            : "clamp(48px,7vw,80px) clamp(20px,5vw,80px)",
           borderBottom: "1px solid #E5E7EB",
         }}
       >
@@ -739,7 +727,7 @@ const Volunteer = () => {
               lineHeight: 1.05,
               letterSpacing: "-0.5px",
               color: "#0D1117",
-              marginBottom: "40px",
+              marginBottom: "36px",
             }}
           >
             The{" "}
@@ -750,11 +738,12 @@ const Volunteer = () => {
             </em>
           </h2>
 
+          {/* 2-col on mobile, 4-col on desktop */}
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "16px",
+              gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
+              gap: isMobile ? "12px" : "16px",
             }}
           >
             {PROCESS.map((step, i) => (
@@ -763,10 +752,10 @@ const Volunteer = () => {
                 style={{
                   background: i % 2 === 0 ? "#0F1E35" : "#F8F9FB",
                   borderRadius: "16px",
-                  padding: "32px 28px",
+                  padding: isMobile ? "22px 18px" : "32px 28px",
                   display: "flex",
                   flexDirection: "column",
-                  gap: "12px",
+                  gap: "10px",
                   position: "relative",
                   overflow: "hidden",
                   boxShadow:
@@ -800,15 +789,13 @@ const Volunteer = () => {
                     }}
                   />
                 )}
-
-                {/* Big faded step number */}
                 <span
                   style={{
                     position: "absolute",
                     bottom: "-10px",
                     right: "8px",
                     fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "100px",
+                    fontSize: isMobile ? "72px" : "100px",
                     fontWeight: 700,
                     lineHeight: 1,
                     color:
@@ -837,7 +824,7 @@ const Volunteer = () => {
                 <h4
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "clamp(20px,2.5vw,26px)",
+                    fontSize: isMobile ? "20px" : "clamp(20px,2.5vw,26px)",
                     fontWeight: 700,
                     color: i % 2 === 0 ? "#F0F6FF" : "#0D1117",
                     lineHeight: 1.2,
@@ -850,12 +837,13 @@ const Volunteer = () => {
                 <p
                   style={{
                     fontFamily: "'Barlow', sans-serif",
-                    fontSize: "13px",
+                    fontSize: isMobile ? "12px" : "13px",
                     fontWeight: 300,
                     lineHeight: 1.8,
                     color: i % 2 === 0 ? "rgba(200,214,232,0.55)" : "#6B7280",
                     position: "relative",
                     zIndex: 1,
+                    margin: 0,
                   }}
                 >
                   {step.desc}
@@ -871,7 +859,9 @@ const Volunteer = () => {
         id="apply"
         style={{
           background: "#F8F9FB",
-          padding: "clamp(48px,7vw,80px) clamp(20px,5vw,80px)",
+          padding: isMobile
+            ? "48px 24px"
+            : "clamp(48px,7vw,80px) clamp(20px,5vw,80px)",
           borderBottom: "1px solid #E5E7EB",
         }}
       >
@@ -880,13 +870,20 @@ const Volunteer = () => {
             maxWidth: "1200px",
             margin: "0 auto",
             display: "grid",
-            gridTemplateColumns: "clamp(260px,28vw,380px) 1fr",
-            gap: "clamp(32px,5vw,64px)",
+            gridTemplateColumns: isMobile
+              ? "1fr"
+              : "clamp(240px,25vw,340px) 1fr",
+            gap: isMobile ? "28px" : "clamp(32px,5vw,64px)",
             alignItems: "start",
           }}
         >
-          {/* Left sticky */}
-          <div style={{ position: "sticky", top: "100px" }}>
+          {/* Left side info — not sticky on mobile */}
+          <div
+            style={{
+              position: isMobile ? "relative" : "sticky",
+              top: isMobile ? "unset" : "100px",
+            }}
+          >
             <div
               style={{
                 display: "flex",
@@ -920,12 +917,12 @@ const Volunteer = () => {
             <h2
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(32px,4vw,52px)",
+                fontSize: "clamp(28px,4vw,48px)",
                 fontWeight: 700,
                 lineHeight: 1.05,
                 letterSpacing: "-0.5px",
                 color: "#0D1117",
-                marginBottom: "18px",
+                marginBottom: "16px",
               }}
             >
               Ready to{" "}
@@ -946,25 +943,26 @@ const Volunteer = () => {
                 fontWeight: 300,
                 lineHeight: 1.85,
                 color: "#6B7280",
-                marginBottom: "16px",
+                marginBottom: "12px",
               }}
             >
               Fill in the form and our team will be in touch within 5 working
               days to discuss your role, location, and availability.
             </p>
-            <p
-              style={{
-                fontFamily: "'Barlow', sans-serif",
-                fontSize: "13px",
-                fontWeight: 300,
-                lineHeight: 1.75,
-                color: "#9CA3AF",
-              }}
-            >
-              No experience is too little. If you are willing, we will train
-              you. What matters most is commitment and a genuine desire to
-              serve.
-            </p>
+            {!isMobile && (
+              <p
+                style={{
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: "13px",
+                  fontWeight: 300,
+                  lineHeight: 1.75,
+                  color: "#9CA3AF",
+                }}
+              >
+                No experience is too little. If you are willing, we will train
+                you.
+              </p>
+            )}
           </div>
 
           {/* Form */}
@@ -974,13 +972,13 @@ const Volunteer = () => {
                 background: "#FFFFFF",
                 border: "1px solid #E5E7EB",
                 borderRadius: "20px",
-                padding: "64px 48px",
+                padding: isMobile ? "48px 24px" : "64px 48px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
                 textAlign: "center",
-                minHeight: "400px",
+                minHeight: "360px",
                 gap: "20px",
                 borderTop: "3px solid #2F8AC9",
               }}
@@ -989,7 +987,7 @@ const Volunteer = () => {
               <h3
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "32px",
+                  fontSize: "clamp(24px,3vw,32px)",
                   fontWeight: 700,
                   color: "#0D1117",
                 }}
@@ -1003,12 +1001,11 @@ const Volunteer = () => {
                   fontWeight: 300,
                   lineHeight: 1.8,
                   color: "#6B7280",
-                  maxWidth: "360px",
+                  maxWidth: "340px",
                 }}
               >
                 Thank you for applying to volunteer with {ORG_NAME}. Our team
-                will review your application and be in touch within 5 working
-                days.
+                will be in touch within 5 working days.
               </p>
               <a
                 href="/"
@@ -1036,7 +1033,7 @@ const Volunteer = () => {
                 background: "#FFFFFF",
                 border: "1px solid #E5E7EB",
                 borderRadius: "20px",
-                padding: "clamp(24px,4vw,44px)",
+                padding: isMobile ? "24px 20px" : "clamp(24px,4vw,44px)",
                 boxShadow: "0 4px 24px rgba(0,0,0,0.05)",
                 position: "relative",
                 overflow: "hidden",
@@ -1057,7 +1054,7 @@ const Volunteer = () => {
               <h3
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "clamp(24px,3vw,32px)",
+                  fontSize: "clamp(22px,3vw,30px)",
                   fontWeight: 700,
                   color: "#0D1117",
                   marginBottom: "6px",
@@ -1071,7 +1068,7 @@ const Volunteer = () => {
                   fontSize: "13px",
                   fontWeight: 300,
                   color: "#9CA3AF",
-                  marginBottom: "28px",
+                  marginBottom: "24px",
                 }}
               >
                 All starred fields are required.
@@ -1084,11 +1081,10 @@ const Volunteer = () => {
                   gap: "14px",
                 }}
               >
-                {/* Name */}
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
+                    gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                     gap: "12px",
                   }}
                 >
@@ -1122,11 +1118,10 @@ const Volunteer = () => {
                   </div>
                 </div>
 
-                {/* Email + Phone */}
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
+                    gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                     gap: "12px",
                   }}
                 >
@@ -1159,11 +1154,10 @@ const Volunteer = () => {
                   </div>
                 </div>
 
-                {/* Location + Country */}
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
+                    gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                     gap: "12px",
                   }}
                 >
@@ -1197,7 +1191,6 @@ const Volunteer = () => {
                   </div>
                 </div>
 
-                {/* Role */}
                 <div>
                   <label style={lbl}>Area of Interest *</label>
                   <select
@@ -1223,7 +1216,6 @@ const Volunteer = () => {
                   </select>
                 </div>
 
-                {/* Availability */}
                 <div>
                   <label style={lbl}>Availability *</label>
                   <select
@@ -1247,7 +1239,6 @@ const Volunteer = () => {
                   </select>
                 </div>
 
-                {/* Skills */}
                 <div>
                   <label style={lbl}>Relevant Skills</label>
                   <input
@@ -1262,7 +1253,6 @@ const Volunteer = () => {
                   />
                 </div>
 
-                {/* Motivation */}
                 <div>
                   <label style={lbl}>Why Do You Want to Volunteer? *</label>
                   <textarea
@@ -1319,7 +1309,9 @@ const Volunteer = () => {
       <section
         style={{
           background: "#0F1E35",
-          padding: "clamp(40px,5vw,64px) clamp(20px,5vw,80px)",
+          padding: isMobile
+            ? "44px 24px"
+            : "clamp(40px,5vw,64px) clamp(20px,5vw,80px)",
           position: "relative",
           overflow: "hidden",
         }}
@@ -1347,15 +1339,17 @@ const Volunteer = () => {
             pointerEvents: "none",
           }}
         />
+
         <div
           style={{
             maxWidth: "1200px",
             margin: "0 auto",
             display: "flex",
+            flexDirection: isMobile ? "column" : "row",
             flexWrap: "wrap",
-            alignItems: "center",
+            alignItems: isMobile ? "flex-start" : "center",
             justifyContent: "space-between",
-            gap: "24px",
+            gap: "20px",
             position: "relative",
             zIndex: 1,
           }}
@@ -1364,7 +1358,9 @@ const Volunteer = () => {
             <h3
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(24px,4vw,40px)",
+                fontSize: isMobile
+                  ? "clamp(24px,7vw,36px)"
+                  : "clamp(24px,4vw,40px)",
                 fontWeight: 700,
                 color: "#F0F6FF",
                 lineHeight: 1.1,
@@ -1410,6 +1406,7 @@ const Volunteer = () => {
               borderRadius: "4px",
               textDecoration: "none",
               flexShrink: 0,
+              alignSelf: isMobile ? "flex-start" : "auto",
             }}
           >
             Donate Instead →
