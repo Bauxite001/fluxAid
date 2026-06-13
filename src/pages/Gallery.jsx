@@ -438,19 +438,54 @@ const Gallery = () => {
                         }}
                       />
                     ) : (
-                      <img
-                        src={item.media_url}
-                        alt={item.alt}
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          transition: "transform 0.5s ease",
-                          transform: hovered ? "scale(1.06)" : "scale(1)",
-                        }}
-                      />
+                      <>
+                        <img
+                          src={item.media_url}
+                          alt={item.alt}
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                            // Show fallback emoji instead
+                            const fallback =
+                              e.target.parentElement.querySelector(
+                                ".img-fallback",
+                              );
+                            if (fallback) fallback.style.display = "flex";
+                          }}
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            transition: "transform 0.5s ease",
+                            transform: hovered ? "scale(1.06)" : "scale(1)",
+                          }}
+                        />
+                        {/* Hidden fallback shown if image URL is broken */}
+                        <div
+                          className="img-fallback"
+                          style={{
+                            display: "none",
+                            position: "absolute",
+                            inset: 0,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            background: i % 3 === 0 ? "#0F1E35" : "#F8F9FB",
+                            zIndex: 2,
+                            flexDirection: "column",
+                            gap: "8px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: isLarge ? "48px" : "28px",
+                              opacity: 0.15,
+                            }}
+                          >
+                            {item.emoji || "📷"}
+                          </span>
+                        </div>
+                      </>
                     )
                   ) : (
                     <span
@@ -839,6 +874,12 @@ const Gallery = () => {
                   <img
                     src={lightbox.media_url}
                     alt={lightbox.alt}
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                      // Show a fallback message in the lightbox
+                      const fb = document.getElementById("lightbox-fallback");
+                      if (fb) fb.style.display = "flex";
+                    }}
                     style={{
                       width: "100%",
                       maxHeight: "65vh",
@@ -850,32 +891,33 @@ const Gallery = () => {
                 )
               ) : (
                 <div
+                  id="lightbox-fallback"
                   style={{
-                    display: "flex",
+                    display: "none",
+                    position: "absolute",
+                    inset: 0,
                     flexDirection: "column",
                     alignItems: "center",
-                    gap: "16px",
-                    padding: isMobile ? "40px 20px" : "80px",
-                    opacity: 0.2,
-                    position: "relative",
-                    zIndex: 1,
+                    justifyContent: "center",
+                    gap: "14px",
+                    zIndex: 2,
                   }}
                 >
-                  <span style={{ fontSize: isMobile ? "54px" : "80px" }}>
-                    {lightbox.emoji}
+                  <span style={{ fontSize: "60px", opacity: 0.15 }}>
+                    {lightbox.emoji || "📷"}
                   </span>
-                  <span
+                  <p
                     style={{
                       fontFamily: "'Barlow Condensed', sans-serif",
-                      fontSize: "11px",
+                      fontSize: "10px",
                       fontWeight: 600,
-                      letterSpacing: "2.5px",
+                      letterSpacing: "2px",
                       textTransform: "uppercase",
                       color: "#9CA3AF",
                     }}
                   >
-                    Photo coming soon
-                  </span>
+                    This photo was removed
+                  </p>
                 </div>
               )}
             </div>

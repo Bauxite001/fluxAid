@@ -272,6 +272,14 @@ const GalleryTeaser = () => {
                   <img
                     src={displayItems[0].media_url}
                     alt={displayItems[0].alt}
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                      const fb =
+                        e.target.parentElement.querySelector(
+                          ".teaser-fallback",
+                        );
+                      if (fb) fb.style.display = "flex";
+                    }}
                     style={{
                       position: "absolute",
                       inset: 0,
@@ -283,10 +291,11 @@ const GalleryTeaser = () => {
                 )
               ) : (
                 <div
+                  className="teaser-fallback"
                   style={{
+                    display: "none",
                     position: "absolute",
                     inset: 0,
-                    display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     zIndex: 2,
@@ -443,6 +452,13 @@ const GalleryTeaser = () => {
                     <img
                       src={item.media_url}
                       alt={item.alt}
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        const fb = e.target.parentElement.querySelector(
+                          ".teaser-fallback-sm",
+                        );
+                        if (fb) fb.style.display = "flex";
+                      }}
                       style={{
                         position: "absolute",
                         inset: 0,
@@ -453,17 +469,27 @@ const GalleryTeaser = () => {
                     />
                   )
                 ) : (
-                  <span
+                  <div
+                    className="teaser-fallback-sm"
                     style={{
-                      fontSize: "36px",
-                      opacity: 0.25,
-                      userSelect: "none",
-                      position: "relative",
-                      zIndex: 1,
+                      display: "none",
+                      position: "absolute",
+                      inset: 0,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      zIndex: 2,
                     }}
                   >
-                    {item.emoji || "📷"}
-                  </span>
+                    <span
+                      style={{
+                        fontSize: "32px",
+                        opacity: 0.2,
+                        userSelect: "none",
+                      }}
+                    >
+                      {item.emoji || "📷"}
+                    </span>
+                  </div>
                 )}
 
                 {/* Video badge */}

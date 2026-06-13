@@ -1,5 +1,5 @@
 // pages/Contact.jsx
-
+import emailjs from "@emailjs/browser";
 import { useState, useEffect } from "react";
 import { ORG_NAME, CONTACT } from "../constants";
 
@@ -26,6 +26,8 @@ const Contact = () => {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= 768);
@@ -36,9 +38,32 @@ const Contact = () => {
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError("");
+
+    try {
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_CONTACT_TEMPLATE,
+        {
+          from_name: `${form.firstName} ${form.lastName}`,
+          from_email: form.email,
+          phone: form.phone || "Not provided",
+          organisation: form.organisation || "Not provided",
+          enquiry_type: form.enquiryType,
+          message: form.message,
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+      );
+      setSubmitted(true);
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Please try again or email us directly.");
+    }
+
+    setLoading(false);
   };
 
   const inp = {
@@ -463,12 +488,36 @@ const Contact = () => {
                   />
                 </div>
 
+                {error && (
+                  <div
+                    style={{
+                      background: "rgba(220,38,38,0.08)",
+                      border: "1px solid rgba(220,38,38,0.2)",
+                      borderRadius: "8px",
+                      padding: "12px 16px",
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontFamily: "'Barlow', sans-serif",
+                        fontSize: "13px",
+                        fontWeight: 300,
+                        color: "#DC2626",
+                        margin: 0,
+                      }}
+                    >
+                      {error}
+                    </p>
+                  </div>
+                )}
+
                 <button
                   type="submit"
+                  disabled={loading}
                   style={{
                     width: "100%",
                     padding: "15px",
-                    background: "#2F8AC9",
+                    background: loading ? "rgba(47,138,201,0.6)" : "#2F8AC9",
                     color: "white",
                     border: "none",
                     borderRadius: "8px",
@@ -477,11 +526,12 @@ const Contact = () => {
                     fontWeight: 700,
                     letterSpacing: "2.5px",
                     textTransform: "uppercase",
-                    cursor: "pointer",
+                    cursor: loading ? "not-allowed" : "pointer",
                     marginTop: "4px",
+                    transition: "background 0.2s",
                   }}
                 >
-                  Send Message →
+                  {loading ? "Sending..." : "Send Message →"}
                 </button>
                 <p
                   style={{

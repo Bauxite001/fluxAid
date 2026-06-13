@@ -18,7 +18,7 @@ export const CONTACT = {
   phone1: "+234-9031681499",
   phone2: "+234-8089683324",
   phone3: "+234-8179866007",
-  email1: "fluxaidinitiative@gmail.com",
+  email1: "fluxaidvulinitiative@gmail.com",
   email2: "mail@fluxaid.org",
   website: "www.fluxaid.org",
   social: "@fluxaidinitiative",

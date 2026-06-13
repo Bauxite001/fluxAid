@@ -1,7 +1,10 @@
 // pages/Volunteer.jsx
 
+import emailjs from "@emailjs/browser";
 import { useState, useEffect } from "react";
 import { ORG_NAME } from "../constants";
+
+// ── DATA ─────────────────────────────────────────────────────────────
 
 const ROLES = [
   {
@@ -75,21 +78,57 @@ const PROCESS = [
   },
 ];
 
+const EMPTY_FORM = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  location: "",
+  country: "",
+  role: "",
+  availability: "",
+  skills: "",
+  motivation: "",
+};
+
+// ── SHARED STYLES ─────────────────────────────────────────────────────
+
+const inp = {
+  width: "100%",
+  padding: "14px 16px",
+  background: "#F8F9FB",
+  border: "1.5px solid #E5E7EB",
+  borderRadius: "8px",
+  outline: "none",
+  fontFamily: "'Barlow', sans-serif",
+  fontSize: "14px",
+  color: "#0D1117",
+  boxSizing: "border-box",
+  transition: "border-color 0.2s",
+};
+
+const lbl = {
+  fontFamily: "'Barlow Condensed', sans-serif",
+  fontSize: "9px",
+  fontWeight: 700,
+  letterSpacing: "2.5px",
+  textTransform: "uppercase",
+  color: "#9CA3AF",
+  display: "block",
+  marginBottom: "6px",
+};
+
+const focusBlue = (e) => (e.target.style.borderColor = "#2F8AC9");
+const blurReset = (e) => (e.target.style.borderColor = "#E5E7EB");
+
+// ── COMPONENT ─────────────────────────────────────────────────────────
+
 const Volunteer = () => {
   const [isMobile, setIsMobile] = useState(false);
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    location: "",
-    country: "",
-    role: "",
-    availability: "",
-    skills: "",
-    motivation: "",
-  });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= 768);
@@ -99,40 +138,42 @@ const Volunteer = () => {
   }, []);
 
   const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-  const handleSubmit = (e) => {
+    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError("");
+    try {
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_VOLUNTEER_TEMPLATE,
+        {
+          from_name: `${form.firstName} ${form.lastName}`,
+          from_email: form.email,
+          phone: form.phone || "Not provided",
+          location: form.location,
+          country: form.country,
+          role: form.role,
+          availability: form.availability,
+          skills: form.skills || "Not provided",
+          motivation: form.motivation,
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+      );
+      setSubmitted(true);
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Please try again or email us directly.");
+    }
+    setLoading(false);
   };
 
-  const inp = {
-    width: "100%",
-    padding: "14px 16px",
-    background: "#F8F9FB",
-    border: "1.5px solid #E5E7EB",
-    borderRadius: "8px",
-    outline: "none",
-    fontFamily: "'Barlow', sans-serif",
-    fontSize: "14px",
-    color: "#0D1117",
-    boxSizing: "border-box",
-    transition: "border-color 0.2s",
-  };
-
-  const lbl = {
-    fontFamily: "'Barlow Condensed', sans-serif",
-    fontSize: "9px",
-    fontWeight: 700,
-    letterSpacing: "2.5px",
-    textTransform: "uppercase",
-    color: "#9CA3AF",
-    display: "block",
-    marginBottom: "6px",
-  };
+  // ── RENDER ──────────────────────────────────────────────────────────
 
   return (
     <div style={{ background: "#F8F9FB", minHeight: "100vh" }}>
-      {/* ── HERO ─────────────────────────────── */}
+      {/* ══ HERO ══════════════════════════════════════════════════════ */}
       <section
         style={{
           background: "#0F1E35",
@@ -143,6 +184,7 @@ const Volunteer = () => {
           overflow: "hidden",
         }}
       >
+        {/* Background decoration */}
         <div
           style={{
             position: "absolute",
@@ -180,7 +222,7 @@ const Volunteer = () => {
           }}
         />
 
-        {/* Africa watermark — hide on mobile */}
+        {/* Africa watermark — desktop only */}
         {!isMobile && (
           <svg
             style={{
@@ -200,6 +242,7 @@ const Volunteer = () => {
         )}
 
         <div style={{ maxWidth: "700px", position: "relative", zIndex: 1 }}>
+          {/* Eyebrow */}
           <div
             style={{
               display: "flex",
@@ -230,12 +273,13 @@ const Volunteer = () => {
               Get Involved
             </span>
           </div>
+
           <h1
             style={{
               fontFamily: "'Cormorant Garamond', serif",
               fontSize: isMobile
-                ? "clamp(44px,14vw,64px)"
-                : "clamp(48px,8vw,88px)",
+                ? "clamp(44px,13vw,64px)"
+                : "clamp(52px,8vw,88px)",
               fontWeight: 700,
               lineHeight: 0.95,
               letterSpacing: "-2px",
@@ -252,6 +296,7 @@ const Volunteer = () => {
             </em>{" "}
             to Africa
           </h1>
+
           <p
             style={{
               fontFamily: "'Barlow', sans-serif",
@@ -265,14 +310,14 @@ const Volunteer = () => {
           >
             Volunteering with {ORG_NAME} means going where it matters — into
             communities, clinics, classrooms, and fields across Nigeria and
-            Africa.
+            Africa. We need people who are ready to show up.
           </p>
+
           <div
             style={{
               display: "flex",
-              gap: "12px",
-              flexWrap: "wrap",
               flexDirection: isMobile ? "column" : "row",
+              gap: "12px",
             }}
           >
             <a
@@ -331,13 +376,13 @@ const Volunteer = () => {
         </svg>
       </div>
 
-      {/* ── FIELD SHIRT ──────────────────────── */}
+      {/* ══ FIELD SHIRT ═══════════════════════════════════════════════ */}
       <section
         style={{
           background: "#FFFFFF",
           padding: isMobile
             ? "48px 24px"
-            : "clamp(40px,6vw,72px) clamp(20px,5vw,80px)",
+            : "clamp(48px,6vw,72px) clamp(20px,5vw,80px)",
           borderBottom: "1px solid #E5E7EB",
         }}
       >
@@ -346,13 +391,12 @@ const Volunteer = () => {
             maxWidth: "1200px",
             margin: "0 auto",
             display: "grid",
-            gridTemplateColumns: isMobile
-              ? "1fr"
-              : "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: isMobile ? "28px" : "clamp(32px,5vw,60px)",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: isMobile ? "32px" : "clamp(40px,5vw,64px)",
             alignItems: "center",
           }}
         >
+          {/* Text */}
           <div>
             <div
               style={{
@@ -420,6 +464,7 @@ const Volunteer = () => {
             >
               Every {ORG_NAME} volunteer receives our official field shirt on
               onboarding. It is more than branding — it is a commitment.
+              Communities know who we are because they can see us.
             </p>
             <p
               style={{
@@ -440,15 +485,12 @@ const Volunteer = () => {
           <div
             style={{
               width: "100%",
-              minHeight: isMobile ? "220px" : "300px",
+              minHeight: isMobile ? "220px" : "320px",
               background: "#0F1E35",
               borderRadius: "20px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
               overflow: "hidden",
               position: "relative",
-              boxShadow: "0 8px 40px rgba(0,0,0,0.12)",
+              boxShadow: "0 8px 40px rgba(0,0,0,0.15)",
             }}
           >
             <div
@@ -458,6 +500,19 @@ const Volunteer = () => {
                 backgroundImage:
                   "linear-gradient(rgba(47,138,201,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(47,138,201,0.05) 1px, transparent 1px)",
                 backgroundSize: "28px 28px",
+                pointerEvents: "none",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                top: "-40px",
+                right: "-40px",
+                width: "180px",
+                height: "180px",
+                background:
+                  "radial-gradient(circle, rgba(108,96,158,0.2) 0%, transparent 70%)",
+                borderRadius: "50%",
                 pointerEvents: "none",
               }}
             />
@@ -479,7 +534,7 @@ const Volunteer = () => {
         </div>
       </section>
 
-      {/* ── ROLES ────────────────────────────── */}
+      {/* ══ ROLES ═════════════════════════════════════════════════════ */}
       <section
         id="roles"
         style={{
@@ -491,6 +546,7 @@ const Volunteer = () => {
         }}
       >
         <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
+          {/* Header */}
           <div
             style={{
               display: "flex",
@@ -540,145 +596,155 @@ const Volunteer = () => {
             </em>
           </h2>
 
+          {/* Grid — 1 col mobile, auto-fit desktop */}
           <div
             style={{
               display: "grid",
               gridTemplateColumns: isMobile
                 ? "1fr"
-                : "repeat(auto-fit, minmax(280px, 1fr))",
+                : "repeat(auto-fit, minmax(300px, 1fr))",
               gap: "16px",
             }}
           >
-            {ROLES.map((role, i) => (
-              <div
-                key={role.title}
-                style={{
-                  background: i % 3 === 1 ? "#0F1E35" : "#FFFFFF",
-                  borderRadius: "16px",
-                  padding: isMobile ? "24px 20px" : "32px 28px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "14px",
-                  position: "relative",
-                  overflow: "hidden",
-                  boxShadow:
-                    i % 3 === 1
+            {ROLES.map((role, i) => {
+              const isDark = i % 3 === 1;
+              return (
+                <div
+                  key={role.title}
+                  style={{
+                    background: isDark ? "#0F1E35" : "#FFFFFF",
+                    borderRadius: "16px",
+                    padding: isMobile ? "24px 20px" : "32px 28px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "14px",
+                    position: "relative",
+                    overflow: "hidden",
+                    boxShadow: isDark
                       ? "0 8px 32px rgba(0,0,0,0.15)"
                       : "0 2px 12px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.04)",
-                  transition: "transform 0.22s ease",
-                }}
-                onMouseEnter={(e) =>
-                  !isMobile &&
-                  (e.currentTarget.style.transform = "translateY(-4px)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "translateY(0)")
-                }
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    background: `linear-gradient(90deg, ${role.color}, ${role.color === "#2F8AC9" ? "#6C609E" : "#2F8AC9"})`,
-                    borderRadius: "16px 16px 0 0",
+                    transition: "transform 0.22s ease",
                   }}
-                />
-                {i % 3 === 1 && (
+                  onMouseEnter={(e) => {
+                    if (!isMobile)
+                      e.currentTarget.style.transform = "translateY(-4px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  {/* Top accent */}
                   <div
                     style={{
                       position: "absolute",
-                      bottom: "-40px",
-                      right: "-40px",
-                      width: "160px",
-                      height: "160px",
-                      background: `radial-gradient(circle, ${role.color}20 0%, transparent 70%)`,
-                      borderRadius: "50%",
-                      pointerEvents: "none",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "3px",
+                      background: `linear-gradient(90deg, ${role.color}, ${role.color === "#2F8AC9" ? "#6C609E" : "#2F8AC9"})`,
+                      borderRadius: "16px 16px 0 0",
                     }}
                   />
-                )}
 
-                <div
-                  style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "12px",
-                    background: `${role.color}15`,
-                    border: `1px solid ${role.color}30`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "22px",
-                    flexShrink: 0,
-                  }}
-                >
-                  {role.icon}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <h4
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: "clamp(17px,2vw,21px)",
-                      fontWeight: 700,
-                      color: i % 3 === 1 ? "#F0F6FF" : "#0D1117",
-                      lineHeight: 1.2,
-                      marginBottom: "8px",
-                    }}
-                  >
-                    {role.title}
-                  </h4>
-                  <p
-                    style={{
-                      fontFamily: "'Barlow', sans-serif",
-                      fontSize: "13px",
-                      fontWeight: 300,
-                      lineHeight: 1.8,
-                      color: i % 3 === 1 ? "rgba(200,214,232,0.55)" : "#6B7280",
-                      margin: 0,
-                    }}
-                  >
-                    {role.desc}
-                  </p>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "6px",
-                    paddingTop: "14px",
-                    borderTop: `1px solid ${i % 3 === 1 ? "rgba(255,255,255,0.07)" : "#F3F4F6"}`,
-                  }}
-                >
-                  {role.skills.map((skill) => (
-                    <span
-                      key={skill}
+                  {/* Glow — dark cards */}
+                  {isDark && (
+                    <div
                       style={{
-                        fontFamily: "'Barlow Condensed', sans-serif",
-                        fontSize: "8px",
+                        position: "absolute",
+                        bottom: "-40px",
+                        right: "-40px",
+                        width: "160px",
+                        height: "160px",
+                        background: `radial-gradient(circle, ${role.color}20 0%, transparent 70%)`,
+                        borderRadius: "50%",
+                        pointerEvents: "none",
+                      }}
+                    />
+                  )}
+
+                  {/* Icon */}
+                  <div
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "12px",
+                      background: `${role.color}15`,
+                      border: `1px solid ${role.color}30`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "22px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {role.icon}
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <h4
+                      style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: "clamp(17px,2vw,21px)",
                         fontWeight: 700,
-                        letterSpacing: "1.5px",
-                        textTransform: "uppercase",
-                        color: role.color,
-                        background: `${role.color}12`,
-                        border: `1px solid ${role.color}25`,
-                        padding: "4px 10px",
-                        borderRadius: "4px",
+                        color: isDark ? "#F0F6FF" : "#0D1117",
+                        lineHeight: 1.2,
+                        marginBottom: "8px",
                       }}
                     >
-                      {skill}
-                    </span>
-                  ))}
+                      {role.title}
+                    </h4>
+                    <p
+                      style={{
+                        fontFamily: "'Barlow', sans-serif",
+                        fontSize: "13px",
+                        fontWeight: 300,
+                        lineHeight: 1.8,
+                        color: isDark ? "rgba(200,214,232,0.55)" : "#6B7280",
+                        margin: 0,
+                      }}
+                    >
+                      {role.desc}
+                    </p>
+                  </div>
+
+                  {/* Skills */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "6px",
+                      paddingTop: "14px",
+                      borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "#F3F4F6"}`,
+                    }}
+                  >
+                    {role.skills.map((skill) => (
+                      <span
+                        key={skill}
+                        style={{
+                          fontFamily: "'Barlow Condensed', sans-serif",
+                          fontSize: "8px",
+                          fontWeight: 700,
+                          letterSpacing: "1.5px",
+                          textTransform: "uppercase",
+                          color: role.color,
+                          background: `${role.color}12`,
+                          border: `1px solid ${role.color}25`,
+                          padding: "4px 10px",
+                          borderRadius: "4px",
+                        }}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* ── PROCESS ──────────────────────────── */}
+      {/* ══ PROCESS ═══════════════════════════════════════════════════ */}
       <section
         style={{
           background: "#FFFFFF",
@@ -738,7 +804,7 @@ const Volunteer = () => {
             </em>
           </h2>
 
-          {/* 2-col on mobile, 4-col on desktop */}
+          {/* 2×2 on mobile, 4-col on desktop */}
           <div
             style={{
               display: "grid",
@@ -746,115 +812,121 @@ const Volunteer = () => {
               gap: isMobile ? "12px" : "16px",
             }}
           >
-            {PROCESS.map((step, i) => (
-              <div
-                key={step.step}
-                style={{
-                  background: i % 2 === 0 ? "#0F1E35" : "#F8F9FB",
-                  borderRadius: "16px",
-                  padding: isMobile ? "22px 18px" : "32px 28px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                  position: "relative",
-                  overflow: "hidden",
-                  boxShadow:
-                    i % 2 === 0
+            {PROCESS.map((step, i) => {
+              const isDark = i % 2 === 0;
+              return (
+                <div
+                  key={step.step}
+                  style={{
+                    background: isDark ? "#0F1E35" : "#F8F9FB",
+                    borderRadius: "16px",
+                    padding: isMobile ? "20px 16px" : "32px 28px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                    position: "relative",
+                    overflow: "hidden",
+                    boxShadow: isDark
                       ? "0 8px 32px rgba(0,0,0,0.12)"
                       : "0 2px 10px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.04)",
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    background: `linear-gradient(90deg, ${step.color}, ${step.color === "#2F8AC9" ? "#6C609E" : "#2F8AC9"})`,
-                    borderRadius: "16px 16px 0 0",
                   }}
-                />
-                {i % 2 === 0 && (
+                >
+                  {/* Top accent */}
                   <div
                     style={{
                       position: "absolute",
-                      bottom: "-30px",
-                      right: "-30px",
-                      width: "130px",
-                      height: "130px",
-                      background: `radial-gradient(circle, ${step.color}20 0%, transparent 70%)`,
-                      borderRadius: "50%",
-                      pointerEvents: "none",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "3px",
+                      background: `linear-gradient(90deg, ${step.color}, ${step.color === "#2F8AC9" ? "#6C609E" : "#2F8AC9"})`,
+                      borderRadius: "16px 16px 0 0",
                     }}
                   />
-                )}
-                <span
-                  style={{
-                    position: "absolute",
-                    bottom: "-10px",
-                    right: "8px",
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: isMobile ? "72px" : "100px",
-                    fontWeight: 700,
-                    lineHeight: 1,
-                    color:
-                      i % 2 === 0
+
+                  {/* Glow */}
+                  {isDark && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "-30px",
+                        right: "-30px",
+                        width: "130px",
+                        height: "130px",
+                        background: `radial-gradient(circle, ${step.color}20 0%, transparent 70%)`,
+                        borderRadius: "50%",
+                        pointerEvents: "none",
+                      }}
+                    />
+                  )}
+
+                  {/* Faded step number */}
+                  <span
+                    style={{
+                      position: "absolute",
+                      bottom: "-10px",
+                      right: "8px",
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: isMobile ? "64px" : "100px",
+                      fontWeight: 700,
+                      lineHeight: 1,
+                      color: isDark
                         ? "rgba(255,255,255,0.03)"
                         : "rgba(0,0,0,0.03)",
-                    pointerEvents: "none",
-                    userSelect: "none",
-                  }}
-                >
-                  {step.step}
-                </span>
+                      pointerEvents: "none",
+                      userSelect: "none",
+                    }}
+                  >
+                    {step.step}
+                  </span>
 
-                <span
-                  style={{
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: "10px",
-                    fontWeight: 700,
-                    letterSpacing: "3px",
-                    textTransform: "uppercase",
-                    color: step.color,
-                  }}
-                >
-                  {step.step}
-                </span>
-                <h4
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: isMobile ? "20px" : "clamp(20px,2.5vw,26px)",
-                    fontWeight: 700,
-                    color: i % 2 === 0 ? "#F0F6FF" : "#0D1117",
-                    lineHeight: 1.2,
-                    position: "relative",
-                    zIndex: 1,
-                  }}
-                >
-                  {step.title}
-                </h4>
-                <p
-                  style={{
-                    fontFamily: "'Barlow', sans-serif",
-                    fontSize: isMobile ? "12px" : "13px",
-                    fontWeight: 300,
-                    lineHeight: 1.8,
-                    color: i % 2 === 0 ? "rgba(200,214,232,0.55)" : "#6B7280",
-                    position: "relative",
-                    zIndex: 1,
-                    margin: 0,
-                  }}
-                >
-                  {step.desc}
-                </p>
-              </div>
-            ))}
+                  <span
+                    style={{
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      fontSize: "10px",
+                      fontWeight: 700,
+                      letterSpacing: "3px",
+                      textTransform: "uppercase",
+                      color: step.color,
+                    }}
+                  >
+                    {step.step}
+                  </span>
+                  <h4
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: isMobile ? "18px" : "clamp(20px,2.5vw,26px)",
+                      fontWeight: 700,
+                      color: isDark ? "#F0F6FF" : "#0D1117",
+                      lineHeight: 1.2,
+                      position: "relative",
+                      zIndex: 1,
+                    }}
+                  >
+                    {step.title}
+                  </h4>
+                  <p
+                    style={{
+                      fontFamily: "'Barlow', sans-serif",
+                      fontSize: isMobile ? "12px" : "13px",
+                      fontWeight: 300,
+                      lineHeight: 1.8,
+                      color: isDark ? "rgba(200,214,232,0.55)" : "#6B7280",
+                      position: "relative",
+                      zIndex: 1,
+                      margin: 0,
+                    }}
+                  >
+                    {step.desc}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* ── APPLICATION FORM ─────────────────── */}
+      {/* ══ APPLICATION FORM ══════════════════════════════════════════ */}
       <section
         id="apply"
         style={{
@@ -877,7 +949,7 @@ const Volunteer = () => {
             alignItems: "start",
           }}
         >
-          {/* Left side info — not sticky on mobile */}
+          {/* Left info panel */}
           <div
             style={{
               position: isMobile ? "relative" : "sticky",
@@ -950,23 +1022,75 @@ const Volunteer = () => {
               days to discuss your role, location, and availability.
             </p>
             {!isMobile && (
-              <p
-                style={{
-                  fontFamily: "'Barlow', sans-serif",
-                  fontSize: "13px",
-                  fontWeight: 300,
-                  lineHeight: 1.75,
-                  color: "#9CA3AF",
-                }}
-              >
-                No experience is too little. If you are willing, we will train
-                you.
-              </p>
+              <>
+                <p
+                  style={{
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: "13px",
+                    fontWeight: 300,
+                    lineHeight: 1.75,
+                    color: "#9CA3AF",
+                    marginBottom: "24px",
+                  }}
+                >
+                  No experience is too little. If you are willing, we will train
+                  you. What matters most is commitment and a genuine desire to
+                  serve.
+                </p>
+                {/* Info chips */}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                  }}
+                >
+                  {[
+                    { icon: "⏱", text: "We respond within 5 working days" },
+                    {
+                      icon: "👕",
+                      text: "All volunteers receive the Flux Aid field shirt",
+                    },
+                    { icon: "🌍", text: "Open to applicants across Africa" },
+                  ].map((item) => (
+                    <div
+                      key={item.text}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "15px",
+                          opacity: 0.5,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {item.icon}
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "'Barlow', sans-serif",
+                          fontSize: "12px",
+                          fontWeight: 300,
+                          color: "#9CA3AF",
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {item.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
 
-          {/* Form */}
+          {/* ── FORM ────────────────────────── */}
           {submitted ? (
+            /* Success state */
             <div
               style={{
                 background: "#FFFFFF",
@@ -978,53 +1102,114 @@ const Volunteer = () => {
                 alignItems: "center",
                 justifyContent: "center",
                 textAlign: "center",
-                minHeight: "360px",
+                minHeight: "400px",
                 gap: "20px",
-                borderTop: "3px solid #2F8AC9",
+                position: "relative",
+                overflow: "hidden",
               }}
             >
-              <span style={{ fontSize: "56px", opacity: 0.7 }}>🙌🏾</span>
-              <h3
+              <div
                 style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "clamp(24px,3vw,32px)",
-                  fontWeight: 700,
-                  color: "#0D1117",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "3px",
+                  background: "linear-gradient(90deg, #2F8AC9, #6C609E)",
+                  borderRadius: "20px 20px 0 0",
+                }}
+              />
+              <div
+                style={{
+                  width: "72px",
+                  height: "72px",
+                  borderRadius: "50%",
+                  background: "rgba(39,174,96,0.1)",
+                  border: "1px solid rgba(39,174,96,0.25)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "36px",
                 }}
               >
-                Application received
-              </h3>
-              <p
+                🙌🏾
+              </div>
+              <div>
+                <h3
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "clamp(24px,3vw,32px)",
+                    fontWeight: 700,
+                    color: "#0D1117",
+                    marginBottom: "10px",
+                  }}
+                >
+                  Application received
+                </h3>
+                <p
+                  style={{
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: "14px",
+                    fontWeight: 300,
+                    lineHeight: 1.8,
+                    color: "#6B7280",
+                    maxWidth: "360px",
+                    margin: "0 auto",
+                  }}
+                >
+                  Thank you for applying to volunteer with {ORG_NAME}. Our team
+                  will review your application and be in touch within 5 working
+                  days.
+                </p>
+              </div>
+              <div
                 style={{
-                  fontFamily: "'Barlow', sans-serif",
-                  fontSize: "14px",
-                  fontWeight: 300,
-                  lineHeight: 1.8,
-                  color: "#6B7280",
-                  maxWidth: "340px",
+                  display: "flex",
+                  gap: "10px",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
                 }}
               >
-                Thank you for applying to volunteer with {ORG_NAME}. Our team
-                will be in touch within 5 working days.
-              </p>
-              <a
-                href="/"
-                style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: "10px",
-                  fontWeight: 700,
-                  letterSpacing: "2.5px",
-                  textTransform: "uppercase",
-                  color: "#6C609E",
-                  border: "1.5px solid rgba(108,96,158,0.3)",
-                  background: "transparent",
-                  padding: "11px 22px",
-                  borderRadius: "6px",
-                  textDecoration: "none",
-                }}
-              >
-                Back to Home
-              </a>
+                <button
+                  onClick={() => {
+                    setSubmitted(false);
+                    setForm(EMPTY_FORM);
+                  }}
+                  style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: "10px",
+                    fontWeight: 700,
+                    letterSpacing: "2px",
+                    textTransform: "uppercase",
+                    color: "#2F8AC9",
+                    border: "1.5px solid rgba(47,138,201,0.3)",
+                    background: "transparent",
+                    padding: "11px 22px",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Submit Another
+                </button>
+                <a
+                  href="/"
+                  style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: "10px",
+                    fontWeight: 700,
+                    letterSpacing: "2px",
+                    textTransform: "uppercase",
+                    color: "#6B7280",
+                    border: "1.5px solid #E5E7EB",
+                    background: "transparent",
+                    padding: "11px 22px",
+                    borderRadius: "6px",
+                    textDecoration: "none",
+                  }}
+                >
+                  Back to Home
+                </a>
+              </div>
             </div>
           ) : (
             <form
@@ -1057,7 +1242,7 @@ const Volunteer = () => {
                   fontSize: "clamp(22px,3vw,30px)",
                   fontWeight: 700,
                   color: "#0D1117",
-                  marginBottom: "6px",
+                  marginBottom: "4px",
                 }}
               >
                 Volunteer Application
@@ -1081,6 +1266,7 @@ const Volunteer = () => {
                   gap: "14px",
                 }}
               >
+                {/* Name */}
                 <div
                   style={{
                     display: "grid",
@@ -1098,8 +1284,8 @@ const Volunteer = () => {
                       onChange={handleChange}
                       placeholder="First name"
                       style={inp}
-                      onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
-                      onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                      onFocus={focusBlue}
+                      onBlur={blurReset}
                     />
                   </div>
                   <div>
@@ -1112,12 +1298,13 @@ const Volunteer = () => {
                       onChange={handleChange}
                       placeholder="Last name"
                       style={inp}
-                      onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
-                      onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                      onFocus={focusBlue}
+                      onBlur={blurReset}
                     />
                   </div>
                 </div>
 
+                {/* Email + Phone */}
                 <div
                   style={{
                     display: "grid",
@@ -1135,8 +1322,8 @@ const Volunteer = () => {
                       onChange={handleChange}
                       placeholder="your@email.com"
                       style={inp}
-                      onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
-                      onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                      onFocus={focusBlue}
+                      onBlur={blurReset}
                     />
                   </div>
                   <div>
@@ -1148,12 +1335,13 @@ const Volunteer = () => {
                       onChange={handleChange}
                       placeholder="+234 800 000 0000"
                       style={inp}
-                      onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
-                      onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                      onFocus={focusBlue}
+                      onBlur={blurReset}
                     />
                   </div>
                 </div>
 
+                {/* Location + Country */}
                 <div
                   style={{
                     display: "grid",
@@ -1171,8 +1359,8 @@ const Volunteer = () => {
                       onChange={handleChange}
                       placeholder="e.g. Lagos, Lagos State"
                       style={inp}
-                      onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
-                      onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                      onFocus={focusBlue}
+                      onBlur={blurReset}
                     />
                   </div>
                   <div>
@@ -1185,12 +1373,13 @@ const Volunteer = () => {
                       onChange={handleChange}
                       placeholder="e.g. Nigeria"
                       style={inp}
-                      onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
-                      onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                      onFocus={focusBlue}
+                      onBlur={blurReset}
                     />
                   </div>
                 </div>
 
+                {/* Role */}
                 <div>
                   <label style={lbl}>Area of Interest *</label>
                   <select
@@ -1199,8 +1388,8 @@ const Volunteer = () => {
                     value={form.role}
                     onChange={handleChange}
                     style={{ ...inp, appearance: "none", cursor: "pointer" }}
-                    onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
-                    onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                    onFocus={focusBlue}
+                    onBlur={blurReset}
                   >
                     <option value="" disabled>
                       Select a role
@@ -1216,6 +1405,7 @@ const Volunteer = () => {
                   </select>
                 </div>
 
+                {/* Availability */}
                 <div>
                   <label style={lbl}>Availability *</label>
                   <select
@@ -1224,8 +1414,8 @@ const Volunteer = () => {
                     value={form.availability}
                     onChange={handleChange}
                     style={{ ...inp, appearance: "none", cursor: "pointer" }}
-                    onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
-                    onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                    onFocus={focusBlue}
+                    onBlur={blurReset}
                   >
                     <option value="" disabled>
                       Select availability
@@ -1239,6 +1429,7 @@ const Volunteer = () => {
                   </select>
                 </div>
 
+                {/* Skills */}
                 <div>
                   <label style={lbl}>Relevant Skills</label>
                   <input
@@ -1248,32 +1439,59 @@ const Volunteer = () => {
                     onChange={handleChange}
                     placeholder="e.g. Nursing, Writing, Community work"
                     style={inp}
-                    onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
-                    onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                    onFocus={focusBlue}
+                    onBlur={blurReset}
                   />
                 </div>
 
+                {/* Motivation */}
                 <div>
                   <label style={lbl}>Why Do You Want to Volunteer? *</label>
                   <textarea
                     name="motivation"
                     required
-                    rows={5}
+                    rows={isMobile ? 4 : 5}
                     value={form.motivation}
                     onChange={handleChange}
                     placeholder="Tell us what drives you and what you hope to contribute..."
-                    style={{ ...inp, resize: "none" }}
-                    onFocus={(e) => (e.target.style.borderColor = "#2F8AC9")}
-                    onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+                    style={{ ...inp, resize: "vertical" }}
+                    onFocus={focusBlue}
+                    onBlur={blurReset}
                   />
                 </div>
 
+                {/* Error */}
+                {error && (
+                  <div
+                    style={{
+                      background: "rgba(220,38,38,0.07)",
+                      border: "1px solid rgba(220,38,38,0.2)",
+                      borderRadius: "8px",
+                      padding: "12px 16px",
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontFamily: "'Barlow', sans-serif",
+                        fontSize: "13px",
+                        fontWeight: 300,
+                        color: "#DC2626",
+                        margin: 0,
+                      }}
+                    >
+                      {error}
+                    </p>
+                  </div>
+                )}
+
+                {/* Submit */}
                 <button
                   type="submit"
+                  disabled={loading}
                   style={{
                     width: "100%",
                     padding: "15px",
-                    background: "#2F8AC9",
+                    background: loading ? "rgba(47,138,201,0.55)" : "#2F8AC9",
                     color: "white",
                     border: "none",
                     borderRadius: "8px",
@@ -1282,12 +1500,14 @@ const Volunteer = () => {
                     fontWeight: 700,
                     letterSpacing: "2.5px",
                     textTransform: "uppercase",
-                    cursor: "pointer",
+                    cursor: loading ? "not-allowed" : "pointer",
                     marginTop: "4px",
+                    transition: "background 0.2s",
                   }}
                 >
-                  Submit Application →
+                  {loading ? "Submitting..." : "Submit Application →"}
                 </button>
+
                 <p
                   style={{
                     fontFamily: "'Barlow', sans-serif",
@@ -1305,13 +1525,13 @@ const Volunteer = () => {
         </div>
       </section>
 
-      {/* ── BOTTOM CTA ───────────────────────── */}
+      {/* ══ BOTTOM CTA ════════════════════════════════════════════════ */}
       <section
         style={{
           background: "#0F1E35",
           padding: isMobile
             ? "44px 24px"
-            : "clamp(40px,5vw,64px) clamp(20px,5vw,80px)",
+            : "clamp(44px,5vw,64px) clamp(20px,5vw,80px)",
           position: "relative",
           overflow: "hidden",
         }}
@@ -1346,7 +1566,6 @@ const Volunteer = () => {
             margin: "0 auto",
             display: "flex",
             flexDirection: isMobile ? "column" : "row",
-            flexWrap: "wrap",
             alignItems: isMobile ? "flex-start" : "center",
             justifyContent: "space-between",
             gap: "20px",
